@@ -8,7 +8,7 @@ website:
       - text: "Hands-on Exercise"
         menu:
           - text: "Hands-on Exercise 1 A"
-            href: "Hands-on_EX/Hand-on_EX01/Hand-on_EX01_a.html"
+            href: "~/ISSS626/Hands_on_EX01/Hands_on_EX/Hands_on_EX01/Hand-on_Ex01_a.html"
           - text: "Hands-on Exercise 1 B"
             href: "Hands-on_EX/Hand-on_EX01/Hand-on_EX01_b.html"
           - text: "Hands-on Exercise 2 A"
