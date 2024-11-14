@@ -1,0 +1,167 @@
+---
+title: "In-class-Ex06"
+author: "HuYu"
+---
+
+```         
+```
+
+```{r}
+pacman::p_load(sf, sfdep, tmap, 
+               plotly, tidyverse, 
+               Kendall)
+```
+
+```{r}
+library(spacetime)
+```
+
+```{r}
+
+hunan <- st_read(dsn = "/Users/yuhu/Desktop/Geospatial Analytics and Applications/In-Class Ex05/In-class_Ex06/geospatial",
+                         layer = "hunan")
+GDPPC <- read_csv('/Users/yuhu/Desktop/Geospatial Analytics and Applications/In-Class Ex05/In-class_Ex06/aspatial/Hunan_GDPPC.csv')
+```
+
+```{r}
+# 加载必要的包
+library(dplyr)
+
+# 创建所有县和年份的完整组合
+full_data <- expand.grid(County = unique(hunan$County),  # 从 hunan 数据中提取所有县的名称
+                         Year = unique(GDPPC$Year))     # 从 GDPPC 数据中提取所有年份
+
+# 将 GDPPC 数据合并到这个完整的组合上
+# 如果某个 County 在某些 Year 上缺少 GDPPC 数据，它将会显示 NA
+full_data <- left_join(full_data, GDPPC, by = c("County", "Year"))
+
+# 检查数据的合并结果
+head(full_data)
+
+# 填充缺失的 GDPPC 值，这里我们用 0 填补缺失值 (也可以选择用其他值)
+full_data <- full_data %>%
+  mutate(GDPPC = ifelse(is.na(GDPPC), 0, GDPPC))
+
+# 查看填充后的数据
+head(full_data)
+
+# 确保所有空间单元和时间点都有数据
+nrow(full_data)
+
+```
+
+```{r}
+GDPPC_st <- spacetime(GDPPC, hunan,
+                      .loc_col = "County",
+                      .time_col = "Year")
+```
+
+```{r}
+GDPPC_st <- spacetime(GDPPC, hunan,
+                      .loc_col = "County",
+                      .time_col = "Year")
+```
+
+```{r}
+is_spacetime_cube(GDPPC_st)
+```
+
+```{r}
+GDPPC_nb <- GDPPC_st %>%
+  activate("geometry") %>%
+  mutate(nb = include_self(
+    st_contiguity(geometry)),
+    wt = st_inverse_distance(nb, 
+                             geometry, 
+                             scale = 1,
+                             alpha = 1),
+    .before = 1) %>%
+  set_nbs("nb") %>%
+  set_wts("wt")
+```
+
+```{r}
+gi_stars <- GDPPC_nb %>% 
+  group_by(Year) %>% 
+  mutate(gi_star = local_gstar_perm(
+    GDPPC, nb, wt)) %>% 
+  tidyr::unnest(gi_star)
+```
+
+```{r}
+cbg <- gi_stars %>% 
+  ungroup() %>% 
+  filter(County == "Changsha") |> 
+  select(County, Year, gi_star)
+
+# Plot the result using ggplot2
+ggplot(data = cbg, 
+       aes(x = Year, 
+           y = gi_star)) +
+  geom_line() +
+  theme_light()
+```
+
+```{r}
+p<-ggplot(data = cbg,
+          aes(x = Year,
+              y = gi_star)) +
+  geom_line() +
+  theme_light()
+
+ggplotly(p)
+```
+
+```{r}
+cbg %>%
+  summarise(mk = list(
+    unclass(
+      Kendall::MannKendall(gi_star)))) %>%
+  tidyr::unnest_wider(mk)
+```
+
+```{r}
+ehsa <- gi_stars %>%
+  group_by(County) %>%
+  summarise(mk = list(
+    unclass(
+      Kendall::MannKendall(gi_star)))) %>%
+  tidyr::unnest_wider(mk)
+
+head(ehsa)
+```
+
+```{r}
+ehsa <-emerging_hotspot_analysis(
+  x =GDPPC_st,
+  .var = "GDPPC",
+  k = 1,
+  nsim = 99
+)
+```
+
+```{r}
+ggplot (data =ehsa,
+        aes(x = classification)) +
+  geom_bar()
+```
+
+```{r}
+hunan_ehsa <- hunan %>%
+  left_join(ehsa,
+            by = join_by(County == location))
+
+ehsa_sig <- hunan_ehsa %>%
+  filter(p_value < 0.05)
+
+tmap_mode("plot")
+
+tm_shape(hunan_ehsa) +
+  tm_polygons() +
+  tm_borders(alpha = 0.5) +
+  
+tm_shape(ehsa_sig) +
+  tm_fill("classification") +
+  tm_borders(alpha = 0.4)
+
+```
