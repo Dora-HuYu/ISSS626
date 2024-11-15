@@ -1,0 +1,1125 @@
+---
+title: "Take-home Exercise 1"
+author: "Hu Yu"
+Execute:
+  eval: true
+  echo: true
+  freeze: true
+  warning: false
+---
+
+# **1.Overview**
+
+Road traffic accidents cause approximately 1.19 million deaths and 20–50 million non-fatal injuries annually, with vulnerable road users such as pedestrians, cyclists, and motorcyclists making up more than half of these fatalities. Traffic injuries are the leading cause of death for those aged 5–29, and two-thirds of fatalities occur among working-age individuals (18–59). Low- and middle-income countries suffer 90% of global road fatalities despite having only 60% of the world’s vehicles, and road traffic accidents cost countries 3% of their GDP. Thailand has some of the deadliest roads globally, with around 20,000 deaths annually. Between 2014 and 2021, 19% of accidents occurred on national highways, with 66% of accident-prone areas located on straight road segments.
+
+# **2.Get Start**
+
+## **2.1 Objectives**
+
+The objectives of this exercise are to discover factors influencing road traffic accidents in the Bangkok Metropolitan Region (BMR) by employing spatio-temporal point pattern analysis. Specifically, the goals are to:
+
+1.visualize the spatio-temporal dynamics of road traffic accidents in BMR using statistical graphics and geovisualization methods.
+
+2.conduct detailed spatial analysis using Network Spatial Point Pattern Analysis.
+
+3.perform spatio-temporal analysis using Temporal Network Spatial Point Pattern Analysis methods.
+
+## **2.2 The Study Area**
+
+The focus of this study would in Bangkok Metropolitan Region BMR.
+
+The political definition is defined as the metropolis and the five adjacent provinces of Nakhon Pathom, Pathum Thani, Nonthaburi, Samut Prakan, and Samut Prakan.
+
+## **2.3 Setting the Analytical Tools**
+
+```{r}
+pacman::p_load(sf, spNetwork, tmap, tidyverse, spatstat, lubridate, dplyr, reader, raster, plotly, ggplot2, spatstat)
+```
+
+For the purpose of this Take-home Exercise 1, these R packages will be used. They are:
+
+-   **sf** provides functions for importing, processing, and wrangling geospatial data.
+
+-   **spNetwork** provides methods for network-constrained spatial point pattern analysis, especially for road networks.
+
+-   **tmap** provides functions to produce cartographic-quality thematic maps.
+
+-   **tidyverse**, a family of R packages that provide functions for common data science tasks including data import, transformation, wrangling, and visualization.
+
+-   **spatstat** for performing Spatial Point Pattern Analysis such as kcross, Lcross, etc.
+
+-   **lubridate** provides functions to work with date-times and perform date-time manipulation.
+
+-   **dplyr** provides functions for data manipulation, such as filtering, summarizing, and joining datasets.
+
+-   **reader** provides functions for reading data into R from various formats.
+
+-   **raster** for handling raster data in R.
+
+-   **sparr** provides functions to estimate fixed and adaptive kernel-smoothed spatial relative risk surfaces via the density-ratio method and perform inference.
+
+-   **plotly** provides functions for creating interactive web-based graphs.
+
+-   **ggplot2** provides functions for creating elegant data visualizations based on the grammar of graphics.
+
+    # **3 Data Preparation**
+
+    ## **3.1 Data**
+
+    For the purpose of Take Home Exercise 1, three basic data sets must be used, they are:
+
+-   [Thailand Road Accident \[2019-2022\]](https://www.kaggle.com/datasets/thaweewatboy/thailand-road-accident-2019-2022) on Kaggle
+
+-   [Thailand Roads (OpenStreetMap Export)](https://data.humdata.org/dataset/hotosm_tha_roads) on HDX.
+
+-   [Thailand - Subnational Administrative Boundaries](https://data.humdata.org/dataset/cod-ab-tha?) on HDX.
+
+```{r}
+acc <- read_csv("/Users/yuhu/Desktop/Geospatial Analytics and Applications/TakeHome_EX01/thai_road_accident_2019_2022.csv") %>%
+  mutate(Month_num = month(incident_datetime)) %>%
+  mutate(Month_fac = month(incident_datetime,
+                       label = TRUE,
+                       abbr = TRUE)) %>%
+  mutate(dayofweek = weekdays(incident_datetime))%>%
+  filter(!is.na(longitude) & !is.na(latitude)) %>%
+  st_as_sf(coords = c("longitude", "latitude"),
+                       crs=4326) %>%
+  st_transform(crs = 32647)
+```
+
+```{r}
+write_rds(acc, "/Users/yuhu/Desktop/Geospatial Analytics and Applications/TakeHome_EX01/acc.rds")
+```
+
+This process reads road accident data, extracts the month and day of the week from the incident date, filters out rows with missing geographic coordinates, and converts the data into a spatial format with appropriate geographical and projected coordinate reference systems, enabling further spatial analysis.
+
+### **3.3.2 Import road data and administrative division data**
+
+```{r}
+roads <- st_read(dsn = "/Users/yuhu/Desktop/Geospatial Analytics and Applications/TakeHome_EX01",
+                        layer = "hotosm_tha_roads_lines_shp")
+```
+
+```{r}
+admin_boundaries <- st_read(dsn = "/Users/yuhu/Desktop/Geospatial Analytics and Applications/TakeHome_EX01",
+                        layer = "tha_admbnda_adm1_rtsd_20220121")
+```
+
+```{r}
+admin_boundaries <- st_read(dsn = "/Users/yuhu/Desktop/Geospatial Analytics and Applications/TakeHome_EX01",
+                        layer = "tha_admbnda_adm1_rtsd_20220121")
+```
+
+### **3.3.3 Select the first-level administrative division of bmrf**
+
+```{r}
+bmr_provinces <- c("Bangkok", "Nakhon Pathom", "Pathum Thani", "Nonthaburi", "Samut Prakan", "Samut Sakhon")
+
+bmr_boundary <- admin_boundaries %>%
+  filter(ADM1_EN %in% bmr_provinces)
+```
+
+```{r}
+write_rds(bmr_boundary, "/Users/yuhu/Desktop/Geospatial Analytics and Applications/TakeHome_EX01/bmr_boundary.rds")
+```
+
+```{r}
+bmr_boundary <- read_rds("/Users/yuhu/Desktop/Geospatial Analytics and Applications/TakeHome_EX01/bmr_boundary.rds")
+head(bmr_boundary)
+```
+
+This process isolates the administrative boundaries of the Bangkok Metropolitan Region (BMR) by filtering a dataset to include only the specified provinces: Bangkok, Nakhon Pathom, Pathum Thani, Nonthaburi, and Samut Prakan. This targeted selection enables a focused analysis on the geographic area within the BMR.
+
+### **3.3.4 Select bmrf’s road data**
+
+```{r}
+st_crs(roads) <- 4326
+```
+
+```{r}
+bmr_roads <- st_intersection(roads, bmr_boundary)
+```
+
+This process extracts the road network within the Bangkok Metropolitan Region (BMR) by conducting a spatial intersection between the road dataset and the BMR boundaries.
+
+### **3.3.5 Exclude small roads in the roads**
+
+```{r}
+bmr_roads <- bmr_roads %>%
+  filter(highway %in% c("motorway", "trunk", "primary", "secondary"))
+```
+
+```{r}
+saveRDS(bmr_roads,"/Users/yuhu/Desktop/Geospatial Analytics and Applications/bmr_roads.rds")
+```
+
+```{r}
+bmr_roads <- read_rds("/Users/yuhu/Desktop/Geospatial Analytics and Applications/bmr_roads.rds")
+
+head(bmr_roads)
+
+```
+
+This process filters the road network within the Bangkok Metropolitan Region (BMR) to include only specific types of roads: motorways, trunk roads, primary roads, and secondary roads. This focuses the analysis on major roadways within the region.
+
+### **3.3.6 Select the second-level administrative division of bmrf**
+
+```{r}
+admin_city <- st_read(dsn = "/Users/yuhu/Desktop/Geospatial Analytics and Applications/TakeHome_EX01/tha_adm_rtsd_itos_20210121_shp",
+                        layer = "tha_admbnda_adm2_rtsd_20220121")
+```
+
+```{r}
+st_crs(admin_city) <- 4326
+```
+
+```{r}
+selected_cities <- c("Bangkok", "Nakhon Pathom", "Pathum Thani", "Nonthaburi", "Samut Prakan", "Samut Sakhon")
+
+bmr_city <- admin_city %>%
+  filter(ADM1_EN %in% selected_cities)
+
+bmr_city
+
+saveRDS(bmr_city,"/Users/yuhu/Desktop/Geospatial Analytics and Applications/bmr_city.rds")
+```
+
+```{r}
+bmr_city <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/bmr_city.rds")
+
+head(bmr_city)
+```
+
+This process selects city-level administrative boundaries for the specified cities within the Bangkok Metropolitan Region (BMR) by filtering the dataset for these cities: Bangkok, Nakhon Pathom, Pathum Thani, Nonthaburi, Samut Prakan, and Samut Prakan.
+
+### **3.3.7 Select the third-level administrative division of bmrf**
+
+```{r}
+admin_3 <- st_read(dsn = "/Users/yuhu/Desktop/Geospatial Analytics and Applications/TakeHome_EX01/tha_adm_rtsd_itos_20210121_shp",
+                        layer = "tha_admbnda_adm3_rtsd_20220121")
+```
+
+```{r}
+selected_cities <- c("Bangkok", "Nakhon Pathom", "Pathum Thani", "Nonthaburi", "Samut Prakan", "Samut Sakhon")
+
+bmr_3 <- admin_3 %>%
+  filter(ADM1_EN %in% selected_cities)
+
+bmr_3
+
+saveRDS(bmr_3,"/Users/yuhu/Desktop/Geospatial Analytics and Applications/bmr_3.rds")
+```
+
+```{r}
+bmr_3 <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/bmr_3.rds")
+
+head(bmr_3)
+```
+
+This process selects administrative boundaries at the third level (e.g., districts or subdistricts) for the specified cities within the Bangkok Metropolitan Region (BMR) by filtering the dataset for these cities: Bangkok, Nakhon Pathom, Pathum Thani, Nonthaburi, Samut Prakan, and Samut Prakan.
+
+### **3.3.8 Assign administrative division codes to accident data**
+
+```{r}
+# Load the accident and administrative boundary data
+acc_data <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/TakeHome_EX01/acc.rds")
+adm_data <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/bmr_3.rds")
+
+# Convert accident data to an sf object with specified CRS
+acc_sf <- st_as_sf(acc_data, coords = c("longitude", "latitude"), crs = 4326)
+
+# Convert administrative boundary data to an sf object with geometry specified
+adm_sf <- st_as_sf(adm_data, wkt = "geometry", crs = 4326)
+
+# Ensure both datasets are in the same CRS
+adm_sf <- st_transform(adm_sf, st_crs(acc_sf))
+
+# Spatial join to attach administrative information to accident data
+acc_with_adm <- st_join(acc_sf, adm_sf[, c("ADM3_EN", "ADM2_EN")])
+
+# Print the resulting spatially joined data
+print(acc_with_adm)
+
+```
+
+```{r}
+bmr_provinces <- c("Bangkok", "Nakhon Pathom", "Pathum Thani", "Nonthaburi", "Samut Prakan", "Samut Sakhon")
+
+bmr_acc_data <- acc_with_adm %>%
+  filter(province_en %in% bmr_provinces)
+
+print(bmr_acc_data)
+```
+
+```{r}
+write_rds(bmr_acc_data,"/Users/yuhu/Desktop/Geospatial Analytics and Applications/TakeHome_EX01/acc.rds")
+```
+
+```{r}
+bmr_acc_data <- read_rds("/Users/yuhu/Desktop/Geospatial Analytics and Applications/TakeHome_EX01/acc.rds")
+head(bmr_acc_data)
+```
+
+```{r}
+bmr_acc_data_time <- bmr_acc_data %>%
+  mutate(incident_datetime = ymd_hms(incident_datetime))
+
+bmr_acc_data_time <- bmr_acc_data_time %>%
+  mutate(time_period = case_when(
+    hour(incident_datetime) >= 5 & hour(incident_datetime) < 10 ~ "5-9",
+    hour(incident_datetime) >= 10 & hour(incident_datetime) < 17 ~ "10-16",
+    hour(incident_datetime) >= 17 & hour(incident_datetime) < 21 ~ "17-20",
+    (hour(incident_datetime) >= 21 & hour(incident_datetime) <= 23) | (hour(incident_datetime) >= 0 & hour(incident_datetime) < 5) ~ "21-4"
+  ))
+
+head(bmr_acc_data_time)
+```
+
+This process reads two datasets: accident data (bmr_acc_data.rds) and administrative boundary data (bmr_3.rds). Using the sf package, both datasets are converted to spatial formats, with the accident data set to geographic coordinates and the administrative boundaries transformed to a matching coordinate reference system (CRS). A spatial join is then applied to append administrative names (ADM3_EN and ADM2_EN) to the accident data based on location. Finally, the dataset is filtered to include only accidents within the specified provinces of the Bangkok Metropolitan Region (BMR).
+
+### **3.3.9 Select the boundary of the four most accident-prone cities**
+
+```{r}
+bangkok_boundary <- bmr_city %>%
+  filter(ADM1_EN == "Bangkok")
+
+pathum_thani_boundary <- bmr_city %>%
+  filter(ADM1_EN == "Pathum Thani")
+
+Samut_Prakan_boundary <- bmr_city %>%
+  filter(ADM1_EN == "Samut Prakan")
+
+Nakhon_Pathom_boundary <- bmr_city %>%
+  filter(ADM1_EN == "Nakhon Pathom")
+
+saveRDS(bangkok_boundary,"/Users/yuhu/Desktop/Geospatial Analytics and Applications/bangkok_boundary.rds")
+saveRDS(pathum_thani_boundary,"/Users/yuhu/Desktop/Geospatial Analytics and Applications/pathum_thani_boundary.rds")
+saveRDS(Samut_Prakan_boundary, "/Users/yuhu/Desktop/Geospatial Analytics and Applications/Samut_Prakan_boundary.rds")
+saveRDS(Nakhon_Pathom_boundary, "/Users/yuhu/Desktop/Geospatial Analytics and Applications/Nakhon_Pathom_boundary.rds")
+```
+
+```{r}
+bangkok_boundary <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/bangkok_boundary.rds")
+pathum_thani_boundary <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/pathum_thani_boundary.rds")
+Samut_Prakan_boundary <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/Samut_Prakan_boundary.rds")
+Nakhon_Pathom_boundary <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/Nakhon_Pathom_boundary.rds")
+head(bangkok_boundary)
+```
+
+```{r}
+head(pathum_thani_boundary)
+```
+
+```{r}
+head(Samut_Prakan_boundary)
+```
+
+```{r}
+head(Nakhon_Pathom_boundary)
+```
+
+This procedure involves reading two datasets: bmr_acc_data.rds for accident data and bmr_3.rds for administrative boundaries. Both datasets are converted to spatial formats using the sf package, ensuring that the accident data uses geographic coordinates and that the administrative data aligns to the same coordinate reference system (CRS). A spatial join is then executed to attach administrative names (ADM3_EN and ADM2_EN) to the accident data based on geographic location. Finally, the dataset is filtered to retain only accidents occurring within the designated provinces of the Bangkok Metropolitan Region (BMR).
+
+### **3.3.10 Select the road data of the four cities with the most accidents**
+
+```{r}
+pathum_thani_roads <- bmr_roads %>%
+  filter(ADM1_EN == "Pathum Thani")
+
+bangkok_roads <- bmr_roads %>%
+  filter(ADM1_EN == "Bangkok")
+
+Samut_Prakan_roads <- bmr_roads %>%
+  filter(ADM1_EN == "Samut Prakan")
+
+Nakhon_Pathom_roads <- bmr_roads %>%
+  filter(ADM1_EN == "Nakhon Pathom")
+
+pathum_thani_boundary <- adm_data %>%
+  filter(ADM1_EN == "Pathum Thani")
+
+bangkok_boundary <- adm_data %>%
+  filter(ADM1_EN == "Bangkok")
+
+Samut_Prakan_boundary <- adm_data %>%
+  filter(ADM1_EN == "Samut Prakan")
+
+Nakhon_Pathom_boundary <- adm_data %>%
+  filter(ADM1_EN == "Nakhon Pathom")
+
+pathum_thani_roads_intersection <- st_intersection(pathum_thani_roads, pathum_thani_boundary)
+
+bangkok_roads_intersection <- st_intersection(bangkok_roads, bangkok_boundary)
+
+Samut_Prakan_roads_intersection <- st_intersection(Samut_Prakan_roads, Samut_Prakan_boundary)
+
+Nakhon_Pathom_roads_intersection <- st_intersection(Nakhon_Pathom_roads, Nakhon_Pathom_boundary)
+```
+
+```{r}
+saveRDS(pathum_thani_roads_intersection, "/Users/yuhu/Desktop/Geospatial Analytics and Applications/pathum_thani_roads.rds")
+saveRDS(bangkok_roads_intersection, "/Users/yuhu/Desktop/Geospatial Analytics and Applications/bangkok_roads.rds")
+saveRDS(Samut_Prakan_roads_intersection,"/Users/yuhu/Desktop/Geospatial Analytics and Applications/Samut_Prakan_roads_intersection.rds")
+saveRDS(Nakhon_Pathom_roads_intersection,"/Users/yuhu/Desktop/Geospatial Analytics and Applications/Nakhon_Pathom_roads_intersection.rds")
+```
+
+```{r}
+pathum_thani_roads_intersection <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/pathum_thani_roads.rds")
+
+bangkok_roads_intersection <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/bangkok_roads.rds")
+
+Samut_Prakan_roads_intersection <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/Samut_Prakan_roads_intersection.rds")
+
+Nakhon_Pathom_roads_intersection <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/Nakhon_Pathom_roads_intersection.rds")
+
+head(pathum_thani_roads_intersection)
+```
+
+```{r}
+head(bangkok_roads_intersection)
+```
+
+```{r}
+head(Samut_Prakan_roads_intersection)
+```
+
+```{r}
+head(Nakhon_Pathom_roads_intersection)
+```
+
+This process filters the road network data for each of the four provinces—Pathum Thani, Bangkok, Samut Prakan, and Nakhon Pathom—within the Bangkok Metropolitan Region (BMR), creating subsets of roads specific to each province. It also filters the administrative boundary data for these same provinces. The road networks for each province are then intersected with their respective boundaries, ensuring that only the road segments within the boundaries of each province are retained for further analysis.
+
+### **3.3.11 Select the accident data of the four cities with the most accidents**
+
+```{r}
+bangkok_acc_data <- bmr_acc_data %>%
+  filter(province_en == "Bangkok")
+
+pathum_thani_acc_data <- bmr_acc_data %>%
+  filter(province_en == "Pathum Thani")
+
+Samut_Prakan_acc_data <- bmr_acc_data %>%
+  filter(province_en == "Samut Prakan")
+
+Nakhon_Pathom_acc_data <- bmr_acc_data %>%
+  filter(province_en == "Nakhon Pathom")
+
+saveRDS(bangkok_acc_data, "/Users/yuhu/Desktop/Geospatial Analytics and Applications/bangkok_acc_data.rds")
+saveRDS(pathum_thani_acc_data, "/Users/yuhu/Desktop/Geospatial Analytics and Applications/pathum_thani_acc_data.rds")
+saveRDS(Samut_Prakan_acc_data, "/Users/yuhu/Desktop/Geospatial Analytics and Applications/Samut_Prakan_acc_data.rds")
+saveRDS(Nakhon_Pathom_acc_data, "/Users/yuhu/Desktop/Geospatial Analytics and Applications/Nakhon_Pathom_acc_data.rds")
+```
+
+```{r}
+bangkok_acc_data <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/bangkok_acc_data.rds")
+pathum_thani_acc_data <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/pathum_thani_acc_data.rds")
+Samut_Prakan_acc_data <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/Samut_Prakan_acc_data.rds")
+Nakhon_Pathom_acc_data <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/Nakhon_Pathom_acc_data.rds")
+head(bangkok_acc_data)
+```
+
+```{r}
+head(pathum_thani_acc_data)
+```
+
+```{r}
+head(Samut_Prakan_acc_data)
+```
+
+```{r}
+head(Nakhon_Pathom_acc_data)
+```
+
+his process filters the accident data for each of the four provinces within the Bangkok Metropolitan Region (BMR)—Bangkok, Pathum Thani, Samut Prakan, and Nakhon Pathom—creating subsets of accident data specific to each province.
+
+# **4.Visualize analysis**
+
+## **4.1 Visualization of roads and traffic accidents**
+
+```{r}
+ggplot() +
+  geom_sf(data = bmr_roads, color = "black", size = 0.5) +  
+  geom_sf(data = bmr_acc_data, color = "red", size = 2, alpha = 0.6) +  
+  labs(title = "BMR Roads and Accident Locations") +
+  theme_minimal()
+```
+
+The visualization presents the road network (black) alongside accident locations (red) within the Bangkok Metropolitan Region (BMR). Accidents are dispersed across the area, with noticeable clusters along main roads and highways, particularly in central zones and areas with dense road connections. These clusters suggest a higher accident frequency in high-traffic regions, highlighting specific accident-prone zones that may benefit from focused safety interventions. This pattern points to a strong correlation between traffic volume and accident incidence.
+
+## **4.2 Visualization of accident severity grading**
+
+```{r}
+bmr_acc_data <- bmr_acc_data %>%
+  mutate(accident_severity = case_when(
+    number_of_fatalities == 0 & number_of_injuries == 0 ~ "Minor Accident",
+    number_of_fatalities == 0 & number_of_injuries >= 1 & number_of_injuries <= 3 ~ "Few Injuries",
+    number_of_fatalities == 0 & number_of_injuries >= 4 & number_of_injuries <= 10 ~ "Moderate Injuries",
+    number_of_fatalities == 0 & number_of_injuries > 10 ~ "Mass Casualties",
+    number_of_fatalities > 0 ~ "Fatal Accident"
+  ))
+
+head(bmr_acc_data)
+```
+
+In this step, road accidents in the Bangkok Metropolitan Region are categorized by severity levels, including classifications like minor accidents, few injuries, moderate injuries, mass casualties, and fatal accidents. This categorization provides a clearer view of the severity distribution within the dataset, facilitating a deeper understanding of accident impact across the region.
+
+```{r}
+colnames(bmr_acc_data)
+```
+
+```{r}
+bmr_acc_data$year_month <- format(as.Date(bmr_acc_data$incident_datetime), "%Y-%m")
+
+
+bmr_acc_data_summary <- bmr_acc_data %>%
+  group_by(year_month, accident_severity) %>%
+  summarise(count = n())
+
+
+bmr_acc_data_summary$year_month <- as.Date(paste0(bmr_acc_data_summary$year_month, "-01"))
+
+
+ggplot(bmr_acc_data_summary, aes(x = year_month, y = count, color = accident_severity, group = accident_severity)) +
+  geom_line() +
+  geom_point() +
+  scale_x_date(date_labels = "%Y", date_breaks = "1 year") +  # x轴上只显示年份
+  labs(title = "Accident Severity Over Time",
+       x = "Year",
+       y = "Accident Count",
+       color = "Accident Severity") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+This visualization displays the trend of road accident severity over time from 2019 to 2023. The accident severity categories are represented with different colors, showing the number of incidents for each type per time period. The chart reveals that “Few Injuries” and “Minor Accidents” are the most common types, with fluctuating but generally increasing trends, especially in recent years. “Fatal Accidents” and “Moderate Injuries” remain relatively lower in occurrence, with slight variations over time. The trend for “Mass Casualties” is consistently low but stable. Overall, there is a visible increase in accident severity over time, particularly for the categories with fewer injuries and minor accidents. This suggests a rising trend in accident occurrences with relatively fewer severe outcomes, but the persistence of fatal and moderate injury accidents signals ongoing safety concerns.
+
+## **4.3 Visualization analysis of accident causes**
+
+```{r}
+bmr_acc_data_1 <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/TakeHome_EX01/acc.rds")
+bmr_acc_data <- bmr_acc_data_1 %>%
+  mutate(incident_datetime = ymd_hms(incident_datetime),
+         year_month = format(incident_datetime, "%Y-%m")) %>%
+  drop_na(year_month)  
+
+bmr_acc_summary <- bmr_acc_data %>%
+  group_by(year_month, presumed_cause) %>%
+  summarise(accidents = n()) 
+
+gg <- ggplot(bmr_acc_summary, 
+             aes(x = year_month, 
+                 y = accidents, 
+                 size = accidents,  
+                 color = presumed_cause,  
+                 frame = year_month)) +  
+  geom_point(alpha = 0.7) +  
+  labs(title = "Accidents by Presumed Cause Over Time", 
+       x = NULL,  
+       y = "Accident Count") +
+  scale_size(range = c(2, 10)) +  
+  theme_minimal() +
+  theme(axis.text.x = element_blank(),  
+        axis.ticks.x = element_blank()) +  
+  guides(color = guide_legend(override.aes = list(size = 5)))  
+ggplotly(gg) %>%
+  style(hoverinfo = "text")  
+```
+
+These visualizations depict road accidents over time, categorized by presumed causes such as speeding, tailgating, illegal overtaking, and running red lights. The size of the bubbles represents the frequency of accidents attributed to each cause. Over the course of the animation, we observe several key trends:
+
+1.  **Speeding** consistently appears as a major cause, represented by larger bubbles throughout the timeline, indicating its prominent role in accidents.
+
+2.  **Other causes**, such as running red lights and illegal overtaking, also maintain steady but lower frequencies, as shown by smaller bubbles
+
+## **4.4 Visualization of the third-level administrative divisions**
+
+```{r}
+bmr_acc_data <- st_transform(bmr_acc_data, crs = st_crs(bmr_3))
+
+bmr_acc_data_summary <- bmr_acc_data %>%
+  group_by(ADM3_EN) %>%
+  summarize(accidents = n())
+
+bmr_3_summary <- st_join(bmr_3, bmr_acc_data_summary, join = st_intersects)
+
+map <- tm_shape(bmr_3_summary) +
+  tm_borders() +
+  tm_fill("accidents", palette = "YlOrRd", title = "Accident Count") +
+  tm_layout(title = "BMR Accident Distribution by ADM3_EN", title.size = 1.5)
+
+print(map)
+```
+
+This map shows the distribution of road accidents across different administrative zones in the Bangkok Metropolitan Region, with darker shades representing higher accident counts. Central areas, especially in high-traffic zones, exhibit the highest accident concentrations, while peripheral regions have fewer incidents. The visualization highlights significant geographical variability in accident rates, suggesting a need for targeted safety measures in accident-prone areas, particularly in the central parts of the region.
+
+```{r}
+
+```
+
+# **5.Network KDE (NKDE) Analysis**
+
+## **5.1 Data Processing**
+
+### **5.1.1 Convert to LINESTRING format**
+
+```{r}
+
+target_crs <- 32647  # UTM Zone 47N
+
+
+bangkok_acc_data <- st_transform(bangkok_acc_data, crs = target_crs)
+bangkok_roads_intersection <- st_transform(bangkok_roads_intersection, crs = target_crs)
+bangkok_boundary <- st_transform(bangkok_boundary, crs = target_crs)
+
+
+acc_in_bangkok <- st_intersection(bangkok_acc_data, bangkok_boundary)
+roads_in_bangkok <- st_intersection(bangkok_roads_intersection, bangkok_boundary)
+
+
+roads_in_bangkok <- roads_in_bangkok %>%
+  filter(st_geometry_type(roads_in_bangkok) %in% c("LINESTRING", "MULTILINESTRING"))
+
+roads_in_bangkok <- st_cast(roads_in_bangkok, "LINESTRING", group_or_split = TRUE)
+
+st_geometry_type(roads_in_bangkok)
+```
+
+```{r}
+# 确定目标坐标系为 UTM Zone 47N (EPSG: 32647)
+target_crs <- 32647  # UTM Zone 47N
+
+# 将事故数据和道路数据转换为 UTM 坐标系
+pathum_thani_acc_data <- st_transform(pathum_thani_acc_data, crs = target_crs)
+pathum_thani_roads_intersection <- st_transform(pathum_thani_roads_intersection, crs = target_crs)
+pathum_thani_boundary <- st_transform(pathum_thani_boundary, crs = target_crs)
+
+# 执行空间相交操作（剪切）
+acc_in_pathum_thani <- st_intersection(pathum_thani_acc_data, pathum_thani_boundary)
+roads_in_pathum_thani <- st_intersection(pathum_thani_roads_intersection, pathum_thani_boundary)
+
+# 过滤出 LINESTRING 和 MULTILINESTRING 类型的几何对象
+roads_in_pathum_thani <- roads_in_pathum_thani %>%
+  filter(st_geometry_type(roads_in_pathum_thani) %in% c("LINESTRING", "MULTILINESTRING"))
+
+# 将 MULTILINESTRING 转换为多个 LINESTRING，保留所有线段
+roads_in_pathum_thani <- st_cast(roads_in_pathum_thani, "LINESTRING", group_or_split = TRUE)
+
+# 检查转换成功与否，应该显示为 LINESTRING
+st_geometry_type(roads_in_pathum_thani)
+```
+
+```{r}
+# 确定目标坐标系为 UTM Zone 47N (EPSG: 32647)
+target_crs <- 32647  # UTM Zone 47N
+
+# 将事故数据和道路数据转换为 UTM 坐标系
+Samut_Prakan_acc_data <- st_transform(Samut_Prakan_acc_data, crs = target_crs)
+Samut_Prakan_roads_intersection <- st_transform(Samut_Prakan_roads_intersection, crs = target_crs)
+Samut_Prakan_boundary <- st_transform(Samut_Prakan_boundary, crs = target_crs)
+
+# 执行空间相交操作（剪切）
+acc_in_Samut_Prakan <- st_intersection(Samut_Prakan_acc_data, Samut_Prakan_boundary)
+roads_in_Samut_Prakan <- st_intersection(Samut_Prakan_roads_intersection, Samut_Prakan_boundary)
+
+# 过滤出 LINESTRING 和 MULTILINESTRING 类型的几何对象
+roads_in_Samut_Prakan <- roads_in_Samut_Prakan %>%
+  filter(st_geometry_type(roads_in_Samut_Prakan) %in% c("LINESTRING", "MULTILINESTRING"))
+
+# 将 MULTILINESTRING 转换为多个 LINESTRING，保留所有线段
+roads_in_Samut_Prakan <- st_cast(roads_in_Samut_Prakan, "LINESTRING", group_or_split = TRUE)
+
+# 检查转换成功与否，应该显示为 LINESTRING
+st_geometry_type(roads_in_Samut_Prakan)
+```
+
+```{r}
+# 确定目标坐标系为 UTM Zone 47N (EPSG: 32647)
+target_crs <- 32647  # UTM Zone 47N
+
+# 将事故数据和道路数据转换为 UTM 坐标系
+Nakhon_Pathom_acc_data <- st_transform(Nakhon_Pathom_acc_data, crs = target_crs)
+Nakhon_Pathom_roads_intersection <- st_transform(Nakhon_Pathom_roads_intersection, crs = target_crs)
+Nakhon_Pathom_boundary <- st_transform(Nakhon_Pathom_boundary, crs = target_crs)
+
+# 执行空间相交操作（剪切）
+acc_in_Nakhon_Pathom <- st_intersection(Nakhon_Pathom_acc_data, Nakhon_Pathom_boundary)
+roads_in_Nakhon_Pathom <- st_intersection(Nakhon_Pathom_roads_intersection, Nakhon_Pathom_boundary)
+
+# 过滤出 LINESTRING 和 MULTILINESTRING 类型的几何对象
+roads_in_Nakhon_Pathom <- roads_in_Nakhon_Pathom %>%
+  filter(st_geometry_type(roads_in_Nakhon_Pathom) %in% c("LINESTRING", "MULTILINESTRING"))
+
+# 将 MULTILINESTRING 转换为多个 LINESTRING，保留所有线段
+roads_in_Nakhon_Pathom <- st_cast(roads_in_Nakhon_Pathom, "LINESTRING", group_or_split = TRUE)
+
+# 检查转换成功与否，应该显示为 LINESTRING
+st_geometry_type(roads_in_Nakhon_Pathom)
+```
+
+```{r}
+saveRDS(roads_in_bangkok, "/Users/yuhu/Desktop/roads")
+saveRDS(roads_in_Samut_Prakan, "/Users/yuhu/Desktop/roads_in_Samut_Prakan.rds")
+saveRDS(roads_in_pathum_thani, "/Users/yuhu/Desktop/roads_in_pathum_thani.rds")
+saveRDS(roads_in_Nakhon_Pathom, "/Users/yuhu/Desktop/roads_in_Nakhon_Pathom.rds")
+```
+
+This step transforms accident and road network data for multiple regions (Bangkok, Pathum Thani, Samut Prakan, and Nakhon Pathom) into a common coordinate reference system for consistency in spatial analysis. It then performs spatial intersections to clip the accident and road data to the boundaries of each respective region, ensuring that only data within these boundaries are retained. Finally, the road data is refined to retain only LINESTRING geometries, converting any MULTILINESTRING geometries into individual LINESTRING segments for more accurate spatial representation.
+
+### **5.1.2 Preparing the lixels objects**
+
+```{r}
+saveRDS(roads_in_bangkok,"/Users/yuhu/Desktop/roads_in_bangkok.rds")
+```
+
+```{r}
+roads_in_bangkok <- readRDS("/Users/yuhu/Desktop/roads_in_bangkok.rds")
+```
+
+```{r}
+target_crs <- 32647  
+
+bmr_acc_data <- st_transform(bmr_acc_data, crs = target_crs)
+bmr_boundary <- st_transform(bmr_boundary, crs = target_crs)
+
+acc_in_bmr <- st_intersection(bmr_acc_data, bmr_boundary)
+
+print(acc_in_bmr)
+```
+
+```{r}
+saveRDS(acc_in_pathum_thani,"/Users/yuhu/Desktop/Geospatial Analytics and Applications/acc_in_pathum_thani.rds")
+saveRDS(acc_in_bangkok,"/Users/yuhu/Desktop/Geospatial Analytics and Applications/acc_in_bangkok.rds")
+saveRDS(acc_in_Samut_Prakan, "/Users/yuhu/Desktop/Geospatial Analytics and Applications/acc_in_Samut_Prakan.rds")
+saveRDS(acc_in_Nakhon_Pathom, "/Users/yuhu/Desktop/Geospatial Analytics and Applications/acc_in_Nakhon_Pathom.rds")
+```
+
+```{r}
+acc_in_bangkok <-readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/acc_in_bangkok.rds")
+acc_in_pathum_thani <-readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/acc_in_pathum_thani.rds")
+acc_in_Samut_Prakan <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/acc_in_Samut_Prakan.rds")
+acc_in_Nakhon_Pathom <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/acc_in_Nakhon_Pathom.rds")
+```
+
+```{r}
+roads_in_bangkok_lines <- st_cast(roads_in_bangkok, "LINESTRING")
+
+lixels_bangkok <- lixelize_lines(roads_in_bangkok_lines,
+                         10000,        
+                         mindist = 5000)  
+
+samples_bangkok <- lines_center(lixels_bangkok)
+```
+
+```{r}
+roads_in_pathum_thani_lines <- st_cast(pathum_thani_roads_intersection, "LINESTRING")
+
+lixels_pathum_thani <- lixelize_lines(roads_in_pathum_thani_lines,
+                                      10000,        
+                                      mindist = 5000)  
+
+samples_pathum_thani <- lines_center(lixels_pathum_thani)
+```
+
+```{r}
+roads_in_Samut_Prakan_lines <- st_cast(Samut_Prakan_roads_intersection, "LINESTRING")
+
+lixels_Samut_Prakan <- lixelize_lines(roads_in_Samut_Prakan_lines,
+                                      10000,        
+                                      mindist = 5000)  
+
+samples_Samut_Prakan <- lines_center(lixels_Samut_Prakan)
+```
+
+```{r}
+roads_in_Nakhon_Pathom_lines <- st_cast(Nakhon_Pathom_roads_intersection, "LINESTRING")
+
+lixels_Nakhon_Pathom <- lixelize_lines(roads_in_Nakhon_Pathom_lines,
+                                       10000,        
+                                       mindist = 5000)  
+
+samples_Nakhon_Pathom <- lines_center(lixels_Nakhon_Pathom)
+```
+
+```{r}
+print(lixels_bangkok)
+print(samples_bangkok)
+```
+
+```{r}
+saveRDS(lixels_pathum_thani,"/Users/yuhu/Desktop/Geospatial Analytics and Applications/lixels_pathum_thani.rds")
+saveRDS(samples_pathum_thani,"/Users/yuhu/Desktop/Geospatial Analytics and Applications/samples_pathum_thani.rds")
+saveRDS(lixels_bangkok,"/Users/yuhu/Desktop/Geospatial Analytics and Applications/lixels_bangkok.rds")
+saveRDS(samples_bangkok,"/Users/yuhu/Desktop/Geospatial Analytics and Applications/samples_bangkok.rds")
+saveRDS(lixels_Samut_Prakan,"/Users/yuhu/Desktop/Geospatial Analytics and Applications/lixels_Samut_Prakan.rds")
+saveRDS(samples_Samut_Prakan,"/Users/yuhu/Desktop/Geospatial Analytics and Applications/samples_Samut_Prakan.rds")
+saveRDS(lixels_Nakhon_Pathom,"/Users/yuhu/Desktop/Geospatial Analytics and Applications/lixels_Nakhon_Pathom.rds")
+saveRDS(samples_Nakhon_Pathom,"/Users/yuhu/Desktop/Geospatial Analytics and Applications/samples_Nakhon_Pathom.rds")
+```
+
+```{r}
+lixels_bangkok <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/lixels_bangkok.rds")
+
+sample_bangkok <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/samples_bangkok.rds")
+
+lixels_pathum_thani <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/lixels_pathum_thani.rds")
+
+sample_pathum_thani <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/samples_pathum_thani.rds")
+
+lixels_Samut_Prakan <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/lixels_Samut_Prakan.rds")
+
+samples_Samut_Prakan <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/samples_pathum_thani.rds")
+
+lixels_Nakhon_Pathom <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/lixels_Nakhon_Pathom.rds")
+
+samples_Nakhon_Pathom <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/samples_Nakhon_Pathom.rds")
+```
+
+This process begins by converting the road network data for each region (Bangkok, Pathum Thani, Samut Prakan, and Nakhon Pathom) into LINESTRING geometries, creating a consistent spatial format. Next, it generates "lixels" (line pixels)—linear segments of 10,000 meters in length—from these road lines. Using the lixelize_lines function, the road network is divided into these segments with a minimum spacing of 5,000 meters. After creating the lixels, the lines_center function extracts the center points of each segment, resulting in sample points along the road network. These points can be utilized for further spatial analysis, such as assessing traffic flow or accident density along specific segments.
+
+### **5.1.3 Performing NKDE**
+
+```{r}
+nkde_result_bangkok <- nkde(
+  lines = lixels_bangkok,                      
+  events = acc_in_bangkok,                     
+  w = rep(1, nrow(acc_in_bangkok)),            
+  samples = samples_bangkok,                   
+  kernel_name = "quartic",                     
+  bw = 500,                                    
+  div = "bw",                                  
+  method = "simple",                           
+  grid_shape = c(200, 200),                    
+  verbose = TRUE                               
+)
+```
+
+```{r}
+nkde_result_pathum_thani <- nkde(
+  lines = lixels_pathum_thani,                 
+  events = acc_in_pathum_thani,                
+  w = rep(1, nrow(acc_in_pathum_thani)),       
+  samples = samples_pathum_thani,              
+  kernel_name = "quartic",                     
+  bw = 500,                                    
+  div = "bw",                                  
+  method = "simple",                           
+  grid_shape = c(200, 200),                    
+  verbose = TRUE                               
+)
+```
+
+```{r}
+nkde_result_Nakhon_Pathom <- nkde(
+  lines = lixels_Nakhon_Pathom,                
+  events = acc_in_Nakhon_Pathom,               
+  w = rep(1, nrow(acc_in_Nakhon_Pathom)),      
+  samples = samples_Nakhon_Pathom,              
+  kernel_name = "quartic",                      
+  bw = 500,                                     
+  div = "bw",                                   
+  method = "simple",                            
+  grid_shape = c(200, 200),                    
+  verbose = TRUE                                
+)
+```
+
+```{r}
+print(nkde_result_bangkok)
+```
+
+```{r}
+saveRDS(nkde_result_bangkok,"/Users/yuhu/Desktop/Geospatial Analytics and Applications/nkde_result_bangkok.rds")
+```
+
+```{r}
+saveRDS(nkde_result_pathum_thani,"/Users/yuhu/Desktop/Geospatial Analytics and Applications/nkde_result_pathum_thani.rds")
+```
+
+```{r}
+saveRDS(nkde_result_Nakhon_Pathom, "/Users/yuhu/Desktop/Geospatial Analytics and Applications/nkde_result_Nakhon_Pathom.rds")
+```
+
+```{r}
+nkde_result_bangkok <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/nkde_result_bangkok.rds")
+nkde_result_pathum_thani <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/nkde_result_pathum_thani.rds")
+```
+
+This process applies the Network Kernel Density Estimation (NKDE) method to estimate the density of road accidents across different regions (Bangkok, Pathum Thani, Samut Prakan, and Nakhon Pathom). For each region, the road network is divided into “lixels” (linear pixels), and accidents are distributed along these lixels. The quartic kernel is used for smoothing the density with a bandwidth of 500 meters to capture the spatial distribution of accidents. The process standardizes the bandwidth (div = “bw”) and uses a simple method for the density calculation, applied on a 200x200 grid for each region. The function outputs detailed results (verbose = TRUE) for further analysis of accident hotspots along the road networks.
+
+## **5.2 Visualising NKDE**
+
+### **5.2.1 Resampling kernel density**
+
+```{r}
+sample_bangkok$density <- nkde_result_bangkok
+lixels_bangkok$density <- nkde_result_bangkok
+
+sample_bangkok$density <- sample_bangkok$density * 10000
+lixels_bangkok$density <- lixels_bangkok$density * 10000
+```
+
+```{r}
+sample_pathum_thani$density <- nkde_result_pathum_thani
+lixels_pathum_thani$density <- nkde_result_pathum_thani
+
+sample_pathum_thani$density <- sample_pathum_thani$density * 10000
+lixels_pathum_thani$density <- lixels_pathum_thani$density * 10000
+```
+
+```         
+```
+
+```{r}
+samples_Nakhon_Pathom$density <- nkde_result_Nakhon_Pathom
+lixels_Nakhon_Pathom$density <- nkde_result_Nakhon_Pathom
+
+samples_Nakhon_Pathom$density <- samples_Nakhon_Pathom$density * 10000  
+lixels_Nakhon_Pathom$density <- lixels_Nakhon_Pathom$density * 10000
+```
+
+The results from the Network Kernel Density Estimation (NKDE) to both the sample points and lixel segments for each region (Bangkok, Pathum Thani, Samut Prakan, and Nakhon Pathom). The NKDE results represent accident density estimates along the road networks. Afterward, the density values are rescaled from “events per meter” to “events per kilometer” by multiplying the densities by 10,000, ensuring that the density values are expressed in a more interpretable unit of analysis (events per kilometer). This allows for a clearer understanding of the spatial distribution of accident densities along the road network.
+
+### **5.5.2 Visualising the NKDE Data**
+
+```{r,eval=FALSE}
+tmap_mode('view')
+
+tm_shape(lixels_bangkok) +
+  tm_lines(col = "density", palette = "YlOrRd", title.col = "Density", lwd = 2) +
+  tm_shape(acc_in_bangkok) +
+  tm_dots(size = 0.1, col = "blue", alpha = 0.5, title = "Accidents")
+```
+
+```{r}
+tmap_mode('plot')
+```
+
+```{r}
+tmap_mode('view')
+
+tm_shape(lixels_pathum_thani) +
+  tm_lines(col = "density", palette = "YlOrRd", title.col = "Density", lwd = 2) +
+  tm_shape(acc_in_pathum_thani) +
+  tm_dots(size = 0.1, col = "blue", alpha = 0.5, title = "Accidents")
+```
+
+```{r}
+tmap_mode('plot')
+```
+
+```{r}
+tmap_mode('view')
+
+tm_shape(lixels_Nakhon_Pathom) +
+  tm_lines(col = "density", palette = "YlOrRd", title.col = "Density", lwd = 2) +
+  tm_shape(acc_in_Nakhon_Pathom) +
+  tm_dots(size = 0.1, col = "blue", alpha = 0.5, title = "Accidents")
+```
+
+```{r}
+tmap_mode('plot')
+```
+
+This process creates interactive visualizations using the tmap package in R for different regions (Bangkok, Pathum Thani, Samut Prakan, and Nakhon Pathom). The lixels (road segments) are displayed with colors representing the accident density, using the “YlOrRd” (yellow to red) color palette, where darker colors indicate higher density. The road network is overlaid with accident points, marked as blue dots with some transparency to enhance visibility. The tmap_mode(‘view’) sets the tmap to interactive mode, allowing users to explore the map dynamically, while tmap_mode(‘plot’) reverts to static plotting for further visualizations. This visualization highlights accident density along road segments and helps to identify accident hotspots.
+
+### **G_function and K- function Analysis**
+
+K-function Analysis
+
+```{r}
+lixels_bbox <- st_bbox(lixels_bangkok)
+
+W <- owin(xrange = c(lixels_bbox["xmin"], lixels_bbox["xmax"]),
+          yrange = c(lixels_bbox["ymin"], lixels_bbox["ymax"]))
+
+acc_points <- as.ppp(st_coordinates(acc_in_bangkok), W = W)
+
+kfun_result <- Kest(acc_points)
+
+plot(kfun_result, main = "K-function Analysis for Accidents in Bangkok")
+```
+
+G-function Analysis
+
+```{r}
+lixels_bbox <- st_bbox(lixels_bangkok)
+
+W <- owin(xrange = c(lixels_bbox["xmin"], lixels_bbox["xmax"]),
+          yrange = c(lixels_bbox["ymin"], lixels_bbox["ymax"]))
+
+acc_points <- as.ppp(st_coordinates(acc_in_bangkok), W = W)
+
+gfun_result <- Gest(acc_points)
+
+plot(gfun_result, main = "G-function Analysis for Accidents in Bangkok")
+```
+
+The K-function and G-function plots illustrate the spatial distribution of traffic accidents in Bangkok. The K-function plot demonstrates that as distance increases, the cumulative number of accident points rises, with the observed curve consistently exceeding the theoretical random distribution. This indicates spatial clustering of accidents rather than a random distribution, with clustering evident across various distances, pointing to higher accident frequencies in specific areas.
+
+The G-function plot, which examines nearest-neighbor distances among accident points, reinforces this observation. The actual G-function curve is steeper than the theoretical random curve, suggesting that accidents occur closer to each other, indicating a significant clustering effect. This concentration along specific locations or road segments highlights areas in Bangkok with higher accident densities. Such spatial patterns suggest a need for targeted traffic safety measures or adjustments in road planning to address accident-prone zones effectively.
+
+# **6.Spatio-Temporal Point Patterns Analysis**
+
+## **6.1 Data Processing**
+
+```{r}
+bmr_boundary_projected <- st_transform(bmr_boundary, 32647)
+
+st_crs(bmr_boundary_projected)
+```
+
+```{r}
+bmr_boundary_owin <- as.owin(bmr_boundary_projected)
+print(bmr_boundary_owin)
+```
+
+This step converts the boundary data of the Bangkok Metropolitan Region (BMR) into a projected coordinate reference system, specifically UTM Zone 47N (EPSG: 32647), which is commonly used for spatial analysis in Thailand.
+
+## **6.2 Heatmap Analysis**
+
+```{r}
+bmr_acc_data_projected <- st_transform(bmr_acc_data, 32647)
+
+acc_coords <- st_coordinates(bmr_acc_data_projected)
+
+acc_ppp <- ppp(x = acc_coords[, 1], y = acc_coords[, 2], window = bmr_boundary_owin)
+
+spatial_density <- density(acc_ppp)
+
+plot(spatial_density)
+```
+
+This spatial density map highlights a central hotspot where the density is significantly higher, as shown by the yellow and pink areas. The density decreases gradually towards the edges, shifting to blue, indicating lower concentrations. The eastern part of the region shows higher density compared to the west and north, which have lower density values. This suggests that the central and eastern areas experience a higher frequency of the phenomenon being measured, making them key regions for further investigation or intervention.
+
+## **6.3 Visuaising geographic distribution of car accident by month**
+
+```{r}
+tmap_mode("plot")
+
+monthly_map <- tm_shape(bmr_boundary) +
+  tm_borders() +                          
+  tm_shape(bmr_acc_data) +                
+  tm_dots() +                             
+  tm_facets(by = "Month_fac", ncol = 4) +  
+  tm_layout(panel.labels = unique(bmr_acc_data$Month_fac))  
+
+print(monthly_map)
+```
+
+```{r}
+ggplot(data = bmr_acc_data) +
+  geom_sf(data = bmr_boundary, fill = "gray80", color = "black") +   
+  geom_sf(aes(geometry = geometry), color = "black") +               
+  facet_wrap(~ Month_fac, ncol = 4) +                                
+  theme_minimal() +
+  labs(title = "Monthly Geographic Distribution of Accidents")
+```
+
+This visualization illustrates the monthly distribution of road accidents throughout the year, with black dots representing accident locations and lines indicating major roadways. The maps reveal consistent accident hotspots, particularly in central and southern areas, with slight variations in accident density across months. Some months show more widespread accidents, while others exhibit more concentrated patterns. The proximity of accidents to major roads suggests a strong link between traffic volume and accident occurrences, highlighting key areas for targeted traffic safety measures.
+
+## **6.4 Visuaising geographic distribution of car accident by week**
+
+### **6.4.1 Data Processing**
+
+```{r}
+bmr_acc_data_time <- bmr_acc_data %>%
+  mutate(incident_datetime = ymd_hms(incident_datetime))
+
+bmr_acc_data_time <- bmr_acc_data_time %>%
+  mutate(time_period = case_when(
+    hour(incident_datetime) >= 5 & hour(incident_datetime) < 10 ~ "5-9",
+    hour(incident_datetime) >= 10 & hour(incident_datetime) < 17 ~ "10-16",
+    hour(incident_datetime) >= 17 & hour(incident_datetime) < 21 ~ "17-20",
+    (hour(incident_datetime) >= 21 & hour(incident_datetime) <= 23) | (hour(incident_datetime) >= 0 & hour(incident_datetime) < 5) ~ "21-4"
+  ))
+
+head(bmr_acc_data_time)
+```
+
+```{r}
+bmr_acc_data_time_week <- bmr_acc_data_time %>%
+  mutate(week_category = case_when(
+    dayofweek %in% c("Monday", "Tuesday", "Wednesday", "Thursaday", "Friday") ~ "weekday",
+    dayofweek %in% c("Saturday", "Sunday") ~ "weekend"
+  ))
+
+head(bmr_acc_data_time_week)
+```
+
+In this step, road accident data is categorized by both time of day and day of the week. Accidents are divided into four time periods (5-9, 10-16, 17-20, and 21-4) based on the hour they occurred, and are further classified as “weekday” or “weekend” depending on the day. This categorization enables analysis of accident patterns relative to specific time frames and days, offering insights into temporal trends in road accidents.
+
+### **6.4.2 Visualizing weekday vs. weekend traffic accident data**
+
+```{r}
+bmr_acc_data_time_week <- bmr_acc_data_time_week %>%
+  mutate(incident_datetime = ymd_hms(incident_datetime))
+
+bmr_acc_data_time_week <- bmr_acc_data_time_week %>%
+  mutate(time_period = case_when(
+    hour(incident_datetime) >= 5 & hour(incident_datetime) < 10 ~ "morning rush hour",
+    hour(incident_datetime) >= 10 & hour(incident_datetime) < 17 ~ "off-peak hours",
+    hour(incident_datetime) >= 17 & hour(incident_datetime) < 21 ~ "evening rush hour",
+    (hour(incident_datetime) >= 21 & hour(incident_datetime) <= 23) | (hour(incident_datetime) >= 0 & hour(incident_datetime) < 5) ~ "night"
+  ),
+
+  time_period = factor(time_period, levels = c("night", "morning rush hour", "off-peak hours", "evening rush hour"))
+  )
+
+bmr_acc_data_time_weekday <- bmr_acc_data_time_week %>%
+  filter(week_category == "weekday")
+
+tmap_mode("plot")
+
+map <- tm_shape(bmr_boundary) +
+  tm_borders(lwd = 2, col = "black") +  
+  tm_shape(bmr_acc_data_time_weekday) +
+  tm_dots(size = 0.1, col = "red") +  
+  tm_facets(by = "time_period", nrow = 2, ncol = 2) +  
+  tm_layout(title = "Weekday Accident Distribution by Time Period", title.size = 1.2)
+
+print(map)
+```
+
+During morning and evening rush hours, accidents are heavily concentrated along major roads, highlighting the influence of high traffic volumes on accident frequency. In contrast, off-peak hours and nighttime show fewer accidents with a more dispersed pattern. This suggests that although traffic volume drops, accidents still occur, possibly due to varied driving behaviors during these lower-traffic periods.
+
+### **6.4.3 Visualizing traffic accident data for different periods of the week**
+
+```{r}
+bmr_acc_data_time_week <- bmr_acc_data_time_week %>%
+  mutate(incident_datetime = ymd_hms(incident_datetime))
+
+bmr_acc_data_time_week <- bmr_acc_data_time_week %>%
+  mutate(time_period = case_when(
+    hour(incident_datetime) >= 5 & hour(incident_datetime) < 10 ~ "morning rush hour",
+    hour(incident_datetime) >= 10 & hour(incident_datetime) < 17 ~ "off-peak hours",
+    hour(incident_datetime) >= 17 & hour(incident_datetime) < 21 ~ "evening rush hour",
+    (hour(incident_datetime) >= 21 & hour(incident_datetime) <= 23) | (hour(incident_datetime) >= 0 & hour(incident_datetime) < 5) ~ "night"
+  ),
+  time_period = factor(time_period, levels = c("night", "morning rush hour", "off-peak hours", "evening rush hour"))
+  )
+
+bmr_acc_data_time_weekend <- bmr_acc_data_time_week %>%
+  filter(week_category == "weekend")
+
+tmap_mode("plot")
+
+
+map_weekend <- tm_shape(bmr_boundary) +
+  tm_borders(lwd = 2, col = "black") +  
+  tm_shape(bmr_acc_data_time_weekend) +
+  tm_dots(size = 0.1, col = "red") +  
+  tm_facets(by = "time_period", nrow = 2, ncol = 2) +  
+  tm_layout(title = "Weekend Accident Distribution by Time Period", title.size = 1.2)
+
+print(map_weekend)
+
+```
+
+This visualization highlights the differences in road accident distribution on weekends across various time periods compared to weekdays. Late at night (21:00-04:00), accidents on weekends are more dispersed, especially in southern areas, possibly reflecting increased late-night driving and leisure activities. Unlike weekday morning rush hours, where accidents are concentrated along major roads, weekend mornings (5:00-9:00) show a more scattered accident pattern, indicative of lower commuter traffic and different driving behaviors.
+
+During off-peak hours (10:00-16:00) on weekends, accidents remain somewhat dispersed, with a shift toward suburban and recreational areas, likely due to leisure-related travel. The evening period (17:00-20:00) also shows a less concentrated accident pattern than on weekdays, with incidents occurring more frequently outside central urban areas, suggesting travel for social or recreational purposes. These differences between weekday and weekend accident patterns reveal how varying travel behaviors impact road safety.
+
+# **7.Conclusion**
+
+The analysis of road traffic accidents in the Bangkok Metropolitan Region (BMR) identifies several key risk factors contributing to high accident rates and severe injuries. Speeding is a major issue, as higher speeds increase both the risk and severity of crashes, particularly for vulnerable road users like pedestrians and cyclists. Likewise, driving under the influence of alcohol or drugs, such as amphetamines, significantly elevates the likelihood of fatal accidents. Distracted driving, especially from mobile phone use, further exacerbates these risks by causing slower reaction times and lane deviations. These behaviors underscore an urgent need for stricter traffic law enforcement and targeted public awareness initiatives to reduce high-risk driving behaviors in the BMR.
+
+Beyond driver behavior, unsafe road infrastructure and vehicles also significantly impact accident rates in the BMR. The absence of sufficient pedestrian crossings, cycling lanes, and traffic-calming measures leaves non-motorized road users more vulnerable. Additionally, vehicles lacking essential safety features like airbags, seat belts, and electronic stability control increase the risk of fatalities and serious injuries. The analysis also highlights that insufficient post-crash care worsens injury outcomes, indicating a need for faster emergency response times and improved medical support. A holistic approach—addressing road design, vehicle safety standards, law enforcement, and post-crash care—is essential to reducing accidents and enhancing road safety in the BMR.
