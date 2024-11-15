@@ -170,47 +170,47 @@ window.Quarto = {
  <span class="dropdown-text">Hands-on Exercise 2 A</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../Hands-on_EX/Hand-on-EX02/Hands-on_EX02_b.html">
+    <a class="dropdown-item" href="../../Hands_on_EX/Hand-on-EX02/Hands-on_EX02_b.html">
  <span class="dropdown-text">Hands-on Exercise 2 B</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../Hands-on_EX/Hand-on-EX03/Hands-on_EX03.html">
+    <a class="dropdown-item" href="../../Hands_on_EX/Hands_on_EX03/Hands-on_EX03.html">
  <span class="dropdown-text">Hands-on Exercise 3</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../Hands-on_EX/Hand-on-EX04/Hands-on_Ex04.html">
+    <a class="dropdown-item" href="../../Hands_on_EX/Hands_on_EX04/Hands-on_Ex04.html">
  <span class="dropdown-text">Hands-on Exercise 4</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../Hands-on_EX/Hand-on-EX05/Hands-on_Ex05.html">
+    <a class="dropdown-item" href="../../Hands_on_EX/Hands_on_EX05/Hands-on_Ex05.html">
  <span class="dropdown-text">Hands-on Exercise 5 A</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../Hands-on_EX/Hand-on-EX05/Hands-on_Ex05_b.html">
+    <a class="dropdown-item" href="../../Hands_on_EX/Hands_on_EX05/Hands-on_Ex05_b.html">
  <span class="dropdown-text">Hands-on Exercise 5 B</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../Hand-on_EX/Hand-on-EX06/Hand-on_EX06.html">
+    <a class="dropdown-item" href="../../Hands_on_EX/Hands_on_EX06/Hand-on_EX06.html">
  <span class="dropdown-text">Hands-on Exercise 6</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../Hands-on_EX/Hand-on-EX07/Hands-on_EX07.html">
+    <a class="dropdown-item" href="../../Hands_on_EX/Hands_on_EX07/Hands-on_EX07.html">
  <span class="dropdown-text">Hands-on Exercise 7</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../Hands-on_EX/Hand-on-EX08/Hands-on_EX08.html">
+    <a class="dropdown-item" href="../../Hands_on_EX/Hands_on_EX08/Hands-on_EX08.html">
  <span class="dropdown-text">Hands-on Exercise 8</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../Hands-on_EX/Hand-on-EX09/Hands-on_EX09.html">
+    <a class="dropdown-item" href="../../Hands_on_EX/Hands_on_EX09/Hands-on_EX09.html">
  <span class="dropdown-text">Hands-on Exercise 9</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../Hands-on_EX/Hand-on-EX10/Hands-on_EX10.html">
+    <a class="dropdown-item" href="../../Hands_on_EX/Hands_on_EX10/Hands-on_EX10.html">
  <span class="dropdown-text">Hands-on Exercise 10 A</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../Hands-on_EX/Hand-on-EX10/Hands-on_EX10_b.html">
+    <a class="dropdown-item" href="../../Hands_on_EX/Hands_on_EX10/Hands-on_EX10_b.html">
  <span class="dropdown-text">Hands-on Exercise 10 B</span></a>
   </li>  
     </ul>
@@ -477,18 +477,17 @@ dbl (6): origin_id, destination_id, entry_cost, network_cost, exit_cost, tot...
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>distmat_km <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(distmat<span class="sc">/</span><span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p><code>dps,eval=FALSE} acc_Hansen &lt;- data.frame(ac(hexagons$demand,                             eldercare$capacity,                             distmat_km,                              #d0 = 50,                             power = 2,                              family = "Hansen"))</code></p>
+<p><code>ugt,eval=FALSE} acc_Hansen &lt;- data.frame(ac(hexagons$demand,                             eldercare$capacity,                             distmat_km,                              #d0 = 50,                             power = 2,                              family = "Hansen"))</code></p>
 <p><img src="https://r4gdsa.netlify.app/chap17/img/image3.jpg" class="img-fluid"></p>
-<p><code>dps,eval=FALSE} colnames(acc_Hansen) &lt;- "accHansen"</code></p>
+<p><code>ugt,eval=FALSE} colnames(acc_Hansen) &lt;- "accHansen"</code></p>
 <p><img src="https://r4gdsa.netlify.app/chap17/img/image4.jpg" class="img-fluid"></p>
-<p><code>dps,eval=FALSE} acc_Hansen &lt;- tbl_df(acc_Hansen)</code></p>
-<p><code>dps,eval=FALSE} hexagon_Hansen &lt;- bind_cols(hexagons, acc_Hansen)</code></p>
+<p><code>ugt,eval=FALSE} acc_Hansen &lt;- tbl_df(acc_Hansen)</code></p>
+<p><code>ugt,eval=FALSE} hexagon_Hansen &lt;- bind_cols(hexagons, acc_Hansen)</code></p>
 <p><img src="https://r4gdsa.netlify.app/chap17/img/image5.jpg" class="img-fluid"></p>
-<p>```dps,eval=FALSE} acc_Hansen &lt;- data.frame(ac(hexagons<span class="math inline">\(demand,
+<p>```ugt,eval=FALSE} acc_Hansen &lt;- data.frame(ac(hexagons<span class="math inline">\(demand,
                             eldercare\)</span>capacity, distmat_km, #d0 = 50, power = 0.5, family = “Hansen”))</p>
 <p>colnames(acc_Hansen) &lt;- “accHansen” acc_Hansen &lt;- tbl_df(acc_Hansen) hexagon_Hansen &lt;- bind_cols(hexagons, acc_Hansen)</p>
 <pre><code>
-
 
 
 ::: {.cell}
@@ -496,11 +495,11 @@ dbl (6): origin_id, destination_id, entry_cost, network_cost, exit_cost, tot...
 ```{.r .cell-code}
 mapex &lt;- st_bbox(hexagons)</code></pre>
 <p>:::</p>
-<p><code>dps,eval=FALSE} tmap_mode("plot") tm_shape(hexagon_Hansen,          bbox = mapex) +    tm_fill(col = "accHansen",           n = 10,           style = "quantile",           border.col = "black",           border.lwd = 1) + tm_shape(eldercare) +   tm_symbols(size = 0.1) +   tm_layout(main.title = "Accessibility to eldercare: Hansen method",             main.title.position = "center",             main.title.size = 2,             legend.outside = FALSE,             legend.height = 0.45,              legend.width = 3.0,             legend.format = list(digits = 6),             legend.position = c("right", "top"),             frame = TRUE) +   tm_compass(type="8star", size = 2) +   tm_scale_bar(width = 0.15) +   tm_grid(lwd = 0.1, alpha = 0.5)</code></p>
-<p><code>dps,eval=FALSE} hexagon_Hansen &lt;- st_join(hexagon_Hansen, mpsz,                            join = st_intersects)</code></p>
-<p><code>dps,eval=FALSE} ggplot(data=hexagon_Hansen,         aes(y = log(accHansen),             x= REGION_N)) +   geom_boxplot() +   geom_point(stat="summary",               fun.y="mean",               colour ="red",               size=2)</code></p>
+<p><code>ugt,eval=FALSE} tmap_mode("plot") tm_shape(hexagon_Hansen,          bbox = mapex) +    tm_fill(col = "accHansen",           n = 10,           style = "quantile",           border.col = "black",           border.lwd = 1) + tm_shape(eldercare) +   tm_symbols(size = 0.1) +   tm_layout(main.title = "Accessibility to eldercare: Hansen method",             main.title.position = "center",             main.title.size = 2,             legend.outside = FALSE,             legend.height = 0.45,              legend.width = 3.0,             legend.format = list(digits = 6),             legend.position = c("right", "top"),             frame = TRUE) +   tm_compass(type="8star", size = 2) +   tm_scale_bar(width = 0.15) +   tm_grid(lwd = 0.1, alpha = 0.5)</code></p>
+<p><code>ugt,eval=FALSE} hexagon_Hansen &lt;- st_join(hexagon_Hansen, mpsz,                            join = st_intersects)</code></p>
+<p><code>ugt,eval=FALSE} ggplot(data=hexagon_Hansen,         aes(y = log(accHansen),             x= REGION_N)) +   geom_boxplot() +   geom_point(stat="summary",               fun.y="mean",               colour ="red",               size=2)</code></p>
 <p><img src="https://r4gdsa.netlify.app/chap17_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid"></p>
-<p>```dps,eval=FALSE} acc_KD2SFCA &lt;- data.frame(ac(hexagons<span class="math inline">\(demand,
+<p>```ugt,eval=FALSE} acc_KD2SFCA &lt;- data.frame(ac(hexagons<span class="math inline">\(demand,
                             eldercare\)</span>capacity, distmat_km, d0 = 50, power = 2, family = “KD2SFCA”))</p>
 <p>colnames(acc_KD2SFCA) &lt;- “accKD2SFCA” acc_KD2SFCA &lt;- tbl_df(acc_KD2SFCA) hexagon_KD2SFCA &lt;- bind_cols(hexagons, acc_KD2SFCA)</p>
 <pre><code>
@@ -528,10 +527,10 @@ tm_shape(eldercare) +
   tm_scale_bar(width = 0.15) +
   tm_grid(lwd = 0.1, alpha = 0.5)</code></pre>
 <p><img src="https://r4gdsa.netlify.app/chap17_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid"></p>
-<p><code>dps,eval=FALSE} hexagon_KD2SFCA &lt;- st_join(hexagon_KD2SFCA, mpsz,                            join = st_intersects)</code></p>
-<p><code>dps,eval=FALSE} ggplot(data=hexagon_KD2SFCA,         aes(y = accKD2SFCA,             x= REGION_N)) +   geom_boxplot() +   geom_point(stat="summary",               fun.y="mean",               colour ="red",               size=2)</code></p>
+<p><code>ugt,eval=FALSE} hexagon_KD2SFCA &lt;- st_join(hexagon_KD2SFCA, mpsz,                            join = st_intersects)</code></p>
+<p><code>ugt,eval=FALSE} ggplot(data=hexagon_KD2SFCA,         aes(y = accKD2SFCA,             x= REGION_N)) +   geom_boxplot() +   geom_point(stat="summary",               fun.y="mean",               colour ="red",               size=2)</code></p>
 <p><img src="https://r4gdsa.netlify.app/chap17_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid"></p>
-<p>```dps,eval=FALSE} acc_SAM &lt;- data.frame(ac(hexagons<span class="math inline">\(demand,
+<p>```ugt,eval=FALSE} acc_SAM &lt;- data.frame(ac(hexagons<span class="math inline">\(demand,
                          eldercare\)</span>capacity, distmat_km, d0 = 50, power = 2, family = “SAM”))</p>
 <p>colnames(acc_SAM) &lt;- “accSAM” acc_SAM &lt;- tbl_df(acc_SAM) hexagon_SAM &lt;- bind_cols(hexagons, acc_SAM)</p>
 <pre><code>
@@ -559,8 +558,8 @@ tm_shape(eldercare) +
   tm_scale_bar(width = 0.15) +
   tm_grid(lwd = 0.1, alpha = 0.5)</code></pre>
 <p><img src="https://r4gdsa.netlify.app/chap17_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid"></p>
-<p><code>dps,eval=FALSE} hexagon_SAM &lt;- st_join(hexagon_SAM, mpsz,                         join = st_intersects)</code></p>
-<p><code>dps,eval=FALSE} ggplot(data=hexagon_SAM,         aes(y = accSAM,             x= REGION_N)) +   geom_boxplot() +   geom_point(stat="summary",               fun.y="mean",               colour ="red",               size=2)</code></p>
+<p><code>ugt,eval=FALSE} hexagon_SAM &lt;- st_join(hexagon_SAM, mpsz,                         join = st_intersects)</code></p>
+<p><code>ugt,eval=FALSE} ggplot(data=hexagon_SAM,         aes(y = accSAM,             x= REGION_N)) +   geom_boxplot() +   geom_point(stat="summary",               fun.y="mean",               colour ="red",               size=2)</code></p>
 <p><img src="https://r4gdsa.netlify.app/chap17_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid"></p>
 
 
