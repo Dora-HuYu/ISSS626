@@ -226,9 +226,19 @@ This code performs a spatial join to combine tourism economic data (tourism_econ
 ## **4.1 Global spatial autocorrelation analysis**
 
 ### **4.1.1 Visualization with corrplot**
+```{r}
+numeric_columns <- tourism_economy_sf %>%
+  st_drop_geometry() %>%         # 去掉地理信息列
+  dplyr::select(where(is.numeric)) %>%  # 选择所有数值型列
+  colnames()                     # 获取列名
+
+```
 
 ```{r}
-colnames(tourism_economy_sf)
+numeric_columns <- tourism_economy_sf %>%
+  st_drop_geometry() %>%
+  dplyr::select(where(is.numeric)) %>%
+  colnames()
 
 numeric_data <- tourism_economy_sf %>%
   st_drop_geometry() %>%
@@ -295,7 +305,7 @@ corrplot(correlation_matrix, method = "ellipse", type = "upper",
 ```
 
 ```{r}
-distance_matrix <- dist(numeric_data_scaled, method = "euclidean")
+distance_matrix <- dist(numeric_data, method = "euclidean")
 
 hc <- hclust(distance_matrix, method = "ward.D")
 ```
@@ -390,13 +400,11 @@ tm_shape(tourism_economy_sf) +
   tm_layout(title = "Tourism Economy Clusters by Year")
 ```
 
-![](https://isss626-zhangchenbin.netlify.app/take-home_ex/take-home_ex02/Take-home_Ex02_files/figure-html/unnamed-chunk-32-1.png)
-
 In this section, we perform K-means clustering on the tourism-related data and visualize the results spatially. The optimal number of clusters is set to 8, as determined previously. The kmeans() function is used to perform the clustering with 25 random starts to ensure stability in the clustering outcome. The resulting cluster assignments are added to the tourism_economy_sf dataset as a new column.
 
 ### **4.4.7 Calculate the coordinates of the center point of a geometry**
 
-```{r},eval=FALSE}
+```{r},eval=FALSE
 geometry_data <- st_geometry(tourism_economy_sf)
 
 shan_nb <- poly2nb(geometry_data)
@@ -404,11 +412,11 @@ shan_nb <- poly2nb(geometry_data)
 summary(shan.nb)
 ```
 
-```{r}
+```{r},eval=FALSE
 saveRDS(shan.nb,"/Users/yuhu/Desktop/Geospatial Analytics and Applications/shan_nb.rds")
 ```
 
-```{r}
+```{r},eval=FALSE
 shan.nb <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/shan_nb.rds")
 ```
 
@@ -434,7 +442,7 @@ In this section, we determine the neighboring relationships between provinces us
 
 ### **4.4.9 Draw a minimum spanning tree**
 
-```{r},eval=FALSE}
+```{r},eval=FALSE
 geometry_data <- st_geometry(tourism_economy_sf)
 
 
@@ -483,17 +491,6 @@ if (inherits(shan.nb, "nb")) {
   stop("The object shan.nb is not a valid nb object.")
 }
 ```
-
-![](https://isss626-zhangchenbin.netlify.app/take-home_ex/take-home_ex02/Minimum_Spanning_Tree_2019.png)
-
-![](https://isss626-zhangchenbin.netlify.app/take-home_ex/take-home_ex02/Minimum_Spanning_Tree_2020.png)
-
-![](https://isss626-zhangchenbin.netlify.app/take-home_ex/take-home_ex02/Minimum_Spanning_Tree_2021.png)
-
-![](https://isss626-zhangchenbin.netlify.app/take-home_ex/take-home_ex02/Minimum_Spanning_Tree_2022.png)
-
-![](https://isss626-zhangchenbin.netlify.app/take-home_ex/take-home_ex02/Minimum_Spanning_Tree_2023.png)
-
 In this section, we construct the minimum spanning tree (MST) for each year to visualize spatial relationships between provinces based on tourism revenue. The dataset is filtered by year, and neighboring provinces are identified. Revenue data is checked for completeness before calculating edge costs between neighbors. With these costs, a spatial weights matrix is created, enabling the MST calculation to highlight the most efficient connections in terms of tourism revenue.
 
 ## **4.2 Local spatial autocorrelation analysis**
@@ -504,7 +501,7 @@ In this section, we construct the minimum spanning tree (MST) for each year to v
 table(tourism_economy_sf$year)
 ```
 
-```{r},eval=FALSE}
+```{r},eval=FALSE
 data_2019 <- tourism_economy_sf[tourism_economy_sf$year == 2019, ]
 
 data_2019_selected <- data_2019 %>%
@@ -559,13 +556,13 @@ nb_2023 <- poly2nb(data_2023_selected)
 saveRDS(nb_2023, "data/nb_2023.rds")
 ```
 
-```{r},eval=FALSE}
+```{r},eval=FALSE
 nb_2019 <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/nb_2019.rds")
 nb_2020 <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/nb_2020.rds")
 nb_2023 <- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/nb_2023.rds")
 ```
 
-```{r},eval=FALSE}
+```{r},eval=FALSE
 weights_list_2019 <- nb2listw(nb_2019, style = "W", zero.policy = TRUE)
 
 year <- 2019
@@ -576,24 +573,12 @@ moran_i_test_2019 <- moran.test(data_2019$revenue_all, listw = weights_list_2019
 print(paste("Moran's I Test for year:", year))
 ```
 
-\[1\] "Moran's I Test for year: 2019"
 
-```{r}
+```{r},eval=FALSE
 print(moran_i_test_2019)
 ```
 
-Moran I test under randomisation
-
-data: data_2019\$revenue_all
-weights: weights_list_2019
-
-Moran I statistic standard deviate = 36.934, p-value \< 2.2e-16
-alternative hypothesis: greater
-sample estimates:
-Moran I statistic Expectation Variance
-2.106651e-01 -1.083424e-03 3.286909e-05
-
-```{r},eval=FALSE}
+```{r},eval=FALSE
 weights_list_2019 <- nb2listw(nb_2019, style = "W", zero.policy = TRUE)
 
 year_2019 <- 2019
@@ -605,22 +590,13 @@ moran_mc_simulation_2019 <- moran.mc(data_2019$revenue_all, listw = weights_list
 print(paste("Monte Carlo Moran's I for year:", year_2019))
 ```
 
-\[1\] "Monte Carlo Moran's I for year: 2019"
 
-```{r}
+```{r},eval=FALSE
 print(moran_mc_simulation_2019)
 ```
 
-Monte-Carlo simulation of Moran I
 
-data: data_2019\$revenue_all
-weights: weights_list_2019
-number of simulations + 1: 1000
-
-statistic = 0.21067, observed rank = 1000, p-value = 0.001
-alternative hypothesis: greater
-
-```{r}
+```{r},eval=FALSE
 weights_list_2019 <- nb2listw(nb_2019, style = "W", zero.policy = TRUE)
 
 year_2019 <- 2019
@@ -648,7 +624,7 @@ We use the ClustGeo method to apply spatially constrained clustering on tourism 
 
 ### **4.4.2 Geary’s C**
 
-```{r}
+```{r},eval=FALSE
 analyze_geary_by_year <- function(year, nb_data) {
 
   yearly_data <- tourism_economy_sf[tourism_economy_sf$year == year, ]
@@ -675,35 +651,9 @@ analyze_geary_by_year <- function(year, nb_data) {
 analyze_geary_by_year(2019, nb_2019)  
 ```
 
-Processing year: 2019
-
-Geary C test under randomisation
-
-data: yearly_data\$revenue_all
-weights: weights_list_year
-
-Geary C statistic standard deviate = 3.7484, p-value = 8.898e-05
-alternative hypothesis: Expectation greater than statistic
-sample estimates:
-Geary C statistic Expectation Variance
-0.8872807574 1.0000000000 0.0009042762
-
-
-Monte-Carlo simulation of Geary C
-
-data: yearly_data\$revenue_all
-weights: weights_list_year
-number of simulations + 1: 1000
-
-statistic = 0.88728, observed rank = 1, p-value = 0.001
-alternative hypothesis: greater
-
-
-Completed year: 2019
-
 ### **4.4.3 Local Indicator of Spatial Association LISA**
 
-```{r}
+```{r},eval=FALSE
 for (year in c(2019, 2020, 2023)) {
 
   yearly_data <- tourism_economy_sf[tourism_economy_sf$year == year, ]
@@ -722,11 +672,7 @@ for (year in c(2019, 2020, 2023)) {
 }
 ```
 
-Processed neighbors and weights for year: 2019
-Processed neighbors and weights for year: 2020
-Processed neighbors and weights for year: 2023
-
-```{r}
+```{r},eval=FALSE
 for (year in c(2019, 2020, 2023)) {
   
   if (year == 2019) {
@@ -786,7 +732,7 @@ for (year in c(2019, 2020, 2023)) {
 
 ### **4.4.4 Visualize hotspot changes**
 
-```{r}
+```{r},eval=FALSE
 for (year in c(2019, 2020, 2023)) {
 
   if (year == 2019) {

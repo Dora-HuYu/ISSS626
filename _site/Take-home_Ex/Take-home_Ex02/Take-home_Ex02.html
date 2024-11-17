@@ -1,0 +1,1818 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Take-home-EX02 – ISSS626</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">ISSS626</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-hands-on-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Hands-on Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-hands-on-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../Hands_on_EX/Hands_on_EX01/Hand-on_Ex01_a.html">
+ <span class="dropdown-text">Hands-on Exercise 1 A</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_EX/Hand-on_EX01/Hand-on_EX01_b.html">
+ <span class="dropdown-text">Hands-on Exercise 1 B</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands_on_EX/Hands_on_EX02/Hands_on_EX02.html">
+ <span class="dropdown-text">Hands-on Exercise 2 A</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands_on_EX/Hand-on-EX02/Hands-on_EX02_b.html">
+ <span class="dropdown-text">Hands-on Exercise 2 B</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands_on_EX/Hands_on_EX03/Hands-on_EX03.html">
+ <span class="dropdown-text">Hands-on Exercise 3</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands_on_EX/Hands_on_EX04/Hands-on_Ex04.html">
+ <span class="dropdown-text">Hands-on Exercise 4</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands_on_EX/Hands_on_EX05/Hands-on_Ex05.html">
+ <span class="dropdown-text">Hands-on Exercise 5 A</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands_on_EX/Hands_on_EX05/Hands-on_Ex05_b.html">
+ <span class="dropdown-text">Hands-on Exercise 5 B</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands_on_EX/Hands_on_EX06/Hand-on_EX06.html">
+ <span class="dropdown-text">Hands-on Exercise 6</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands_on_EX/Hands_on_EX07/Hands-on_EX07.html">
+ <span class="dropdown-text">Hands-on Exercise 7</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands_on_EX/Hands_on_EX08/Hands-on_EX08.html">
+ <span class="dropdown-text">Hands-on Exercise 8</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands_on_EX/Hands_on_EX09/Hands-on_EX09.html">
+ <span class="dropdown-text">Hands-on Exercise 9</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands_on_EX/Hands_on_EX10/Hands-on_EX10.html">
+ <span class="dropdown-text">Hands-on Exercise 10 A</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands_on_EX/Hands_on_EX10/Hands-on_EX10_b.html">
+ <span class="dropdown-text">Hands-on Exercise 10 B</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-in-class-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">In-class Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-in-class-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../In-class_EX/In-class_EX01/In-class_EX01.html">
+ <span class="dropdown-text">In-class Exercise 1</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../In-class_EX/In-class_EX02/In-class_Ex02.html">
+ <span class="dropdown-text">In-class Exercise 2</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../In-class_EX/In-class_EX03/In-class_Ex03.html">
+ <span class="dropdown-text">In-class Exercise 3</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../In-class_EX/In-class_EX04/In-class_EX04.html">
+ <span class="dropdown-text">In-class Exercise 4</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../In-class_EX/In-class_EX05/In-class_EX05.html">
+ <span class="dropdown-text">In-class Exercise 5</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../In-class_EX/In-class_EX06/In-class_EX06.html">
+ <span class="dropdown-text">In-class Exercise 6</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../In-class_EX/In-class_EX07/In-class_EX07.html">
+ <span class="dropdown-text">In-class Exercise 7</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../In-class_EX/In-class_EX08/In-class_EX08.html">
+ <span class="dropdown-text">In-class Exercise 8</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../In-class_EX/In-class_EX09/In-class_EX09.html">
+ <span class="dropdown-text">In-class Exercise 9</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../In-class_EX/In-class_EX10/In-class_EX10.html">
+ <span class="dropdown-text">In-class Exercise 10</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-take-home-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Take-home Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-take-home-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex01/Take-home_Exercise_1.html">
+ <span class="dropdown-text">Take-home Exercise 1</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html">
+ <span class="dropdown-text">Take-home Exercise 2</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex03/Take-home_Ex03.html">
+ <span class="dropdown-text">Take-home Exercise 3</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview"><strong>1.Overview</strong></a>
+  <ul class="collapse">
+  <li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives"><strong>1.1 Objectives</strong></a></li>
+  <li><a href="#the-study-area" id="toc-the-study-area" class="nav-link" data-scroll-target="#the-study-area"><strong>1.2</strong> <strong>The Study Area</strong></a></li>
+  </ul></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started"><strong>2 Getting Started</strong></a></li>
+  <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation"><strong>3 Data Preparation</strong></a>
+  <ul class="collapse">
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">3.1 Data</a></li>
+  <li><a href="#data-wrangling---geospatial-data" id="toc-data-wrangling---geospatial-data" class="nav-link" data-scroll-target="#data-wrangling---geospatial-data"><strong>3.3 Data Wrangling - Geospatial Data</strong></a></li>
+  </ul></li>
+  <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis"><strong>4 Exploratory Data Analysis</strong></a>
+  <ul class="collapse">
+  <li><a href="#global-spatial-autocorrelation-analysis" id="toc-global-spatial-autocorrelation-analysis" class="nav-link" data-scroll-target="#global-spatial-autocorrelation-analysis"><strong>4.1 Global spatial autocorrelation analysis</strong></a></li>
+  <li><a href="#local-spatial-autocorrelation-analysis" id="toc-local-spatial-autocorrelation-analysis" class="nav-link" data-scroll-target="#local-spatial-autocorrelation-analysis"><strong>4.2 Local spatial autocorrelation analysis</strong></a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><strong>5 Conclusion</strong></a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Take-home-EX02</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="overview" class="level1">
+<h1><strong>1.Overview</strong></h1>
+<p>Tourism plays a vital role in Thailand’s economy, accounting for approximately 20% of the country’s GDP. In 2019, the tourism sector generated 90 billion US dollars in revenue from both domestic and international visitors. However, this revenue sharply declined to just 24 billion US dollars in 2020 due to the impact of the COVID-19 pandemic. The figure below illustrates the total tourism revenue from January 2019 to February 2023, highlighting a gradual recovery in the sector beginning in September 2021.</p>
+<section id="objectives" class="level2">
+<h2 data-anchor-id="objectives"><strong>1.1 Objectives</strong></h2>
+<p>As an enthusiastic newcomer to geospatial analytics, you are eager to investigate whether key indicators of Thailand’s tourism economy are influenced by spatial and spatio-temporal factors. Should you find evidence of such dependencies, your next steps would involve identifying cluster locations, detecting outliers, and pinpointing emerging hot and cold spots in the tourism landscape.</p>
+</section>
+<section id="the-study-area" class="level2">
+<h2 data-anchor-id="the-study-area"><strong>1.2</strong> <strong>The Study Area</strong></h2>
+<p>The study area covers all of Thailand, encompassing its diverse regions and provinces. This comprehensive approach enables a detailed analysis of tourism-related indicators across urban and rural areas, capturing both spatial and temporal trends throughout the country.</p>
+</section>
+</section>
+<section id="getting-started" class="level1">
+<h1><strong>2 Getting Started</strong></h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(spdep, tmap, sf, ClustGeo, parallel,ggpubr, cluster, factoextra, NbClust, ggplot2, pheatmap, heatmaply, corrplot, psych, tidyverse, GGally, spacetime, reader, dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<ul>
+<li><p><strong>spdep</strong>: Provides functions for spatial dependence, spatial autocorrelation, and spatial regression analysis.</p></li>
+<li><p><strong>tmap</strong>: A powerful package for creating thematic maps and visualizing spatial data.</p></li>
+<li><p><strong>sf</strong>: Handles simple feature geometries and is widely used for manipulating and analyzing spatial data in R.</p></li>
+<li><p><strong>ClustGeo</strong>: Implements hierarchical clustering that incorporates both spatial and non-spatial variables.</p></li>
+<li><p><strong>ggpubr</strong>: Simplifies the process of creating and customizing publication-ready ggplot2-based plots.</p></li>
+<li><p><strong>cluster</strong>: Provides clustering algorithms such as k-means, hierarchical clustering, and more.</p></li>
+<li><p><strong>factoextra</strong>: Offers tools to extract and visualize the results of multivariate data analyses, especially clustering.</p></li>
+<li><p><strong>NbClust</strong>: Helps determine the optimal number of clusters in a dataset using various indices and methods.</p></li>
+<li><p><strong>ggplot2</strong>: A versatile package for creating complex and customizable graphics based on the grammar of graphics.</p></li>
+<li><p><strong>pheatmap</strong>: Creates pretty heatmaps with annotations and clustering options for data visualization.</p></li>
+<li><p><strong>heatmaply</strong>: An interactive heatmap generation tool that supports hierarchical clustering and offers rich interactivity.</p></li>
+<li><p><strong>corrplot</strong>: Provides visualization techniques for displaying correlation matrices.</p></li>
+<li><p><strong>psych</strong>: Includes tools for psychological, psychometric, and personality research, with support for factor analysis, reliability, and descriptive statistics.</p></li>
+<li><p><strong>tidyverse</strong>: A collection of packages designed for data manipulation, visualization, and analysis using a consistent syntax.</p></li>
+<li><p><strong>GGally</strong>: Extends ggplot2 to provide additional tools for visualizing multivariate relationships, such as pair plots.</p></li>
+<li><p><strong>spacetime</strong>: Allows for the manipulation and analysis of spatio-temporal data, integrating space and time in analysis.</p></li>
+</ul>
+<p><strong>reader</strong>: A simple package for reading in data, supporting various formats like CSV, Excel, and more.</p>
+</section>
+<section id="data-preparation" class="level1">
+<h1><strong>3 Data Preparation</strong></h1>
+<section id="data" class="level2">
+<h2 data-anchor-id="data">3.1 Data</h2>
+<p>For the purpose of this take-home exercise, two data sets shall be used, they are:</p>
+<ul>
+<li><p><a href="https://www.kaggle.com/datasets/thaweewatboy/thailand-domestic-tourism-statistics">Thailand Domestic Tourism Statistics</a> at Kaggle. You are required to use <strong>version 2</strong> of the data set.</p></li>
+<li><p><a href="https://data.humdata.org/dataset/cod-ab-tha?">Thailand - Subnational Administrative Boundaries</a> at HDX. You are required to use the province boundary data set。</p>
+<h2 id="importing-the-data-into-r-environment"><strong>3.2 Importing the data into R Environment</strong></h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>thailand_domestic_tourism_2019_2023_ver2 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"/Users/yuhu/Desktop/Geospatial Analytics and Applications/TakeHome_EX02/archive/thailand_domestic_tourism_2019_2023_ver2.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 30800 Columns: 4
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr  (2): province, variable
+dbl  (1): value
+date (1): date
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+</div></li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>adm1 <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"/Users/yuhu/Desktop/Geospatial Analytics and Applications/TakeHome_EX02/tha_adm_rtsd_itos_20210121_shp"</span>,  </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">layer =</span> <span class="st">"tha_admbnda_adm1_rtsd_20220121"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>), <span class="dv">16</span>, <span class="dv">17</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `tha_admbnda_adm1_rtsd_20220121' from data source 
+  `/Users/yuhu/Desktop/Geospatial Analytics and Applications/TakeHome_EX02/tha_adm_rtsd_itos_20210121_shp' 
+  using driver `ESRI Shapefile'
+Simple feature collection with 77 features and 16 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: 97.34336 ymin: 5.613038 xmax: 105.637 ymax: 20.46507
+Geodetic CRS:  WGS 84</code></pre>
+</div>
+</div>
+</section>
+<section id="data-wrangling---geospatial-data" class="level2">
+<h2 data-anchor-id="data-wrangling---geospatial-data"><strong>3.3 Data Wrangling - Geospatial Data</strong></h2>
+<section id="unified-regional-naming" class="level3">
+<h3 data-anchor-id="unified-regional-naming"><strong>3.3.1 Unified regional naming</strong></h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>name_mapping <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Lopburi"</span> <span class="ot">=</span> <span class="st">"Lop Buri"</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Chonburi"</span> <span class="ot">=</span> <span class="st">"Chon Buri"</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Prachinburi"</span> <span class="ot">=</span> <span class="st">"Prachin Buri"</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Sisaket"</span> <span class="ot">=</span> <span class="st">"Si Sa Ket"</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Nong Bua Lamphu"</span> <span class="ot">=</span> <span class="st">"Nong Bua Lam Phu"</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Phang Nga"</span> <span class="ot">=</span> <span class="st">"Phangnga"</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Buriram"</span> <span class="ot">=</span> <span class="st">"Buri Ram"</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Chainat"</span> <span class="ot">=</span> <span class="st">"Chai Nat"</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>tourism_data_mean <span class="ot">&lt;-</span> thailand_domestic_tourism_2019_2023_ver2 <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">province_eng =</span> <span class="fu">recode</span>(province, <span class="sc">!!!</span>name_mapping)) <span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(province_eng) <span class="sc">%&gt;%</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_value =</span> <span class="fu">mean</span>(value, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="eda-exploration" class="level3">
+<h3 data-anchor-id="eda-exploration"><strong>3.3.2 EDA Exploration</strong></h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(thailand_domestic_tourism_2019_2023_ver2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>      date              province           variable        
+ Min.   :2019-01-01   Length:30800       Length:30800      
+ 1st Qu.:2020-01-01   Class :character   Class :character  
+ Median :2021-01-16   Mode  :character   Mode  :character  
+ Mean   :2021-01-15                                        
+ 3rd Qu.:2022-02-01                                        
+ Max.   :2023-02-01                                        
+     value           
+ Min.   :-4.250e+03  
+ 1st Qu.: 1.740e+03  
+ Median : 9.335e+04  
+ Mean   : 3.360e+08  
+ 3rd Qu.: 1.817e+07  
+ Max.   : 1.103e+11  </code></pre>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tourism_data_mean, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(province_eng, mean_value), <span class="at">y =</span> mean_value)) <span class="sc">+</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"lightblue"</span>) <span class="sc">+</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Mean Tourism Economy by Province"</span>, <span class="at">x =</span> <span class="st">"Province"</span>, <span class="at">y =</span> <span class="st">"Mean Value"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Take-home_Ex02_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>tourism_data_boxplot <span class="ot">&lt;-</span> thailand_domestic_tourism_2019_2023_ver2 <span class="sc">%&gt;%</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(variable <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"revenue_all"</span>, <span class="st">"revenue_foreign"</span>, <span class="st">"revenue_thai"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tourism_data_boxplot, <span class="fu">aes</span>(<span class="at">x =</span> variable, <span class="at">y =</span> value, <span class="at">fill =</span> variable)) <span class="sc">+</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Boxplot of Revenue Variables"</span>, <span class="at">x =</span> <span class="st">"Variable"</span>, <span class="at">y =</span> <span class="st">"Value"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Take-home_Ex02_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>thailand_domestic_tourism_2019_2023_ver2 <span class="sc">%&gt;%</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(variable <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"no_tourist_all"</span>, <span class="st">"no_tourist_foreign"</span>, <span class="st">"no_tourist_stay"</span>, <span class="st">"no_tourist_thai"</span>, <span class="st">"ratio_tourist_stay"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> variable, <span class="at">y =</span> value, <span class="at">fill =</span> variable)) <span class="sc">+</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Boxplot of Tourist Numbers Variables"</span>, <span class="at">x =</span> <span class="st">"Variable"</span>, <span class="at">y =</span> <span class="st">"Value"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Take-home_Ex02_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The boxplot illustrates the distribution of various tourist-related variables, highlighting distinct ranges and distributions for each, along with notable outliers. Separating the&nbsp;<code>variable</code>&nbsp;column into individual categories is essential to analyze each group independently. This separation enables a clearer comparison of distributions, making it easier to identify specific patterns associated with total tourists, foreign tourists, domestic tourists, and the ratio of staying tourists. Such an approach allows for a more detailed and insightful interpretation of the tourism data.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>thailand_domestic_tourism_2019_2023_ver2 <span class="ot">&lt;-</span> thailand_domestic_tourism_2019_2023_ver2 <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">year =</span> <span class="fu">as.numeric</span>(<span class="fu">format</span>(<span class="fu">as.Date</span>(date), <span class="st">"%Y"</span>)),  </span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">month =</span> <span class="fu">as.numeric</span>(<span class="fu">format</span>(<span class="fu">as.Date</span>(date), <span class="st">"%m"</span>))  </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>thailand_domestic_tourism_2019_2023_ver2 <span class="ot">&lt;-</span> thailand_domestic_tourism_2019_2023_ver2 <span class="sc">%&gt;%</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span><span class="fu">contains</span>(<span class="st">"thai"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="split-old-columns-into-new-columns" class="level3">
+<h3 data-anchor-id="split-old-columns-into-new-columns"><strong>3.3.3 Split old columns into new columns</strong></h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>tourism_economy_all <span class="ot">&lt;-</span> thailand_domestic_tourism_2019_2023_ver2 <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> variable, <span class="at">values_from =</span> value)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(tourism_economy_all,<span class="st">"/Users/yuhu/Desktop/Geospatial Analytics and Applications/tourism_economy_all.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>This code reshapes the thailand_domestic_tourism_2019_2023_ver2 dataset from a long format to a wide format using the pivot_wider function. The names_from argument specifies that the values in the variable column will be used as new column names, while values_from indicates that the corresponding data for each variable will be taken from the value column.</p>
+</section>
+<section id="connecting-data" class="level3">
+<h3 data-anchor-id="connecting-data"><strong>3.3.4 Connecting Data</strong></h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>tourism_economy_all <span class="ot">&lt;-</span> tourism_economy_all <span class="sc">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">as.Date</span>(<span class="fu">paste</span>(year, month, <span class="st">"01"</span>, <span class="at">sep =</span> <span class="st">"-"</span>)))</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tourism_economy_all, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> revenue_all)) <span class="sc">+</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Revenue All Over Time"</span>, <span class="at">x =</span> <span class="st">"Date"</span>, <span class="at">y =</span> <span class="st">"Revenue (All)"</span>) <span class="sc">+</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Take-home_Ex02_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>tourism_economy_all <span class="ot">&lt;-</span> tourism_economy_all <span class="sc">%&gt;%</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">province_eng =</span> <span class="fu">recode</span>(province, <span class="sc">!!!</span>name_mapping),  <span class="co"># Create province_eng if not already present</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">date =</span> <span class="fu">as.Date</span>(<span class="fu">paste</span>(year, month, <span class="st">"01"</span>, <span class="at">sep =</span> <span class="st">"-"</span>)))  <span class="co"># Convert date column</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if province_eng is created</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">colnames</span>(tourism_economy_all))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "date"               "province"           "year"              
+ [4] "month"              "ratio_tourist_stay" "no_tourist_stay"   
+ [7] "no_tourist_all"     "no_tourist_thai"    "no_tourist_foreign"
+[10] "revenue_all"        "revenue_thai"       "revenue_foreign"   
+[13] "province_eng"      </code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Proceed with the join if province_eng is confirmed</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>tourism_economy_sf <span class="ot">&lt;-</span> <span class="fu">left_join</span>(tourism_economy_all, adm1, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"province_eng"</span> <span class="ot">=</span> <span class="st">"ADM1_EN"</span>))</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to an sf (spatial) data frame</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>tourism_economy_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(tourism_economy_sf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(tourism_economy_sf, <span class="st">"/Users/yuhu/Desktop/Geospatial Analytics and Applications/tourism_economy_sf.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>tourism_economy_sf <span class="ot">&lt;-</span><span class="fu">readRDS</span>(<span class="st">"/Users/yuhu/Desktop/Geospatial Analytics and Applications/tourism_economy_sf.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> tourism_economy_sf  </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>geo <span class="ot">&lt;-</span> adm1  </span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>df_geo <span class="ot">&lt;-</span> <span class="fu">st_join</span>(df, geo)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>df_geo <span class="ot">&lt;-</span> <span class="fu">st_drop_geometry</span>(df_geo)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(df_geo,<span class="st">"/Users/yuhu/Desktop/Geospatial Analytics and Applications/df_geo.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>df_geo <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"/Users/yuhu/Desktop/Geospatial Analytics and Applications/df_geo.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>This code performs a spatial join to combine tourism economic data (tourism_economy_sf) with geographical data (adm1). The first step uses st_join to merge these datasets based on their spatial relationships, ensuring that the geographical data (geometry column) is correctly associated with the tourism data. After the spatial join, the st_drop_geometry function is applied to df_geo, removing the spatial (geometry) attributes from the resulting dataset, leaving only the non-spatial data for further analysis. This approach allows for the integration of spatial and tourism-related information while simplifying the dataset for non-spatial analysis.</p>
+</section>
+</section>
+</section>
+<section id="exploratory-data-analysis" class="level1">
+<h1><strong>4 Exploratory Data Analysis</strong></h1>
+<section id="global-spatial-autocorrelation-analysis" class="level2">
+<h2 data-anchor-id="global-spatial-autocorrelation-analysis"><strong>4.1 Global spatial autocorrelation analysis</strong></h2>
+<section id="visualization-with-corrplot" class="level3">
+<h3 data-anchor-id="visualization-with-corrplot"><strong>4.1.1 Visualization with corrplot</strong></h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>numeric_columns <span class="ot">&lt;-</span> tourism_economy_sf <span class="sc">%&gt;%</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">%&gt;%</span>         <span class="co"># 去掉地理信息列</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">where</span>(is.numeric)) <span class="sc">%&gt;%</span>  <span class="co"># 选择所有数值型列</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>()                     <span class="co"># 获取列名</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>numeric_columns <span class="ot">&lt;-</span> tourism_economy_sf <span class="sc">%&gt;%</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">where</span>(is.numeric)) <span class="sc">%&gt;%</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>()</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>numeric_data <span class="ot">&lt;-</span> tourism_economy_sf <span class="sc">%&gt;%</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">all_of</span>(numeric_columns)) <span class="sc">%&gt;%</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), as.numeric))</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(numeric_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "tbl_df"     "tbl"        "data.frame"</code></pre>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 列名</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>numeric_columns <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"no_tourist_stay"</span>, <span class="st">"no_tourist_all"</span>, <span class="st">"no_tourist_thai"</span>, </span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"no_tourist_foreign"</span>, <span class="st">"revenue_all"</span>, <span class="st">"revenue_thai"</span>, </span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"revenue_foreign"</span>)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 去掉几何列并选择数值列</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>numeric_data <span class="ot">&lt;-</span> tourism_economy_sf <span class="sc">%&gt;%</span></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">all_of</span>(numeric_columns)) <span class="sc">%&gt;%</span></span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), as.numeric))</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a><span class="co"># 计算相关矩阵</span></span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>correlation_matrix <span class="ot">&lt;-</span> <span class="fu">cor</span>(numeric_data, <span class="at">use =</span> <span class="st">"complete.obs"</span>)</span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a><span class="co"># 可视化相关矩阵</span></span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(corrplot)</span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a><span class="fu">corrplot</span>(correlation_matrix, <span class="at">method =</span> <span class="st">"ellipse"</span>, <span class="at">type =</span> <span class="st">"upper"</span>, </span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a>         <span class="at">tl.col =</span> <span class="st">"black"</span>, <span class="at">tl.srt =</span> <span class="dv">45</span>, <span class="at">addCoef.col =</span> <span class="st">"black"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Take-home_Ex02_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This code calculates and visualizes the correlation between selected tourism-related numeric variables. First, it selects relevant numeric columns from the tourism_economy_sf dataset, excluding the geometry column, and ensures they are of numeric type. A correlation matrix is then computed using cor(), capturing the relationships between variables like tourist numbers and revenues. Finally, the corrplot function visualizes the matrix with an “ellipse” method, displaying the correlation strength and direction, along with coefficient labels. This provides insights into how the variables are interrelated.</p>
+</section>
+<section id="calculate-clusters" class="level3">
+<h3 data-anchor-id="calculate-clusters"><strong>4.1.2 Calculate clusters</strong></h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 列名</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>numeric_columns <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"no_tourist_stay"</span>, <span class="st">"no_tourist_all"</span>, <span class="st">"no_tourist_thai"</span>, </span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"no_tourist_foreign"</span>, <span class="st">"revenue_all"</span>, <span class="st">"revenue_thai"</span>, </span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"revenue_foreign"</span>)</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 去掉几何列并选择数值列</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>numeric_data <span class="ot">&lt;-</span> tourism_economy_sf <span class="sc">%&gt;%</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">all_of</span>(numeric_columns)) <span class="sc">%&gt;%</span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), as.numeric))</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a><span class="co"># 计算相关矩阵</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>correlation_matrix <span class="ot">&lt;-</span> <span class="fu">cor</span>(numeric_data, <span class="at">use =</span> <span class="st">"complete.obs"</span>)</span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a><span class="co"># 可视化相关矩阵</span></span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(corrplot)</span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a><span class="fu">corrplot</span>(correlation_matrix, <span class="at">method =</span> <span class="st">"ellipse"</span>, <span class="at">type =</span> <span class="st">"upper"</span>, </span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>         <span class="at">tl.col =</span> <span class="st">"black"</span>, <span class="at">tl.srt =</span> <span class="dv">45</span>, <span class="at">addCoef.col =</span> <span class="st">"black"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Take-home_Ex02_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>distance_matrix <span class="ot">&lt;-</span> <span class="fu">dist</span>(numeric_data, <span class="at">method =</span> <span class="st">"euclidean"</span>)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>hc <span class="ot">&lt;-</span> <span class="fu">hclust</span>(distance_matrix, <span class="at">method =</span> <span class="st">"ward.D"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hc, <span class="at">labels =</span> numeric_data<span class="sc">$</span>province_eng, <span class="at">cex =</span> <span class="fl">0.7</span>, <span class="at">main =</span> <span class="st">"Cluster Dendrogram by Province"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Unknown or uninitialised column: `province_eng`.</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rect.hclust</span>(hc, <span class="at">k =</span> <span class="dv">4</span>, <span class="at">border =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Take-home_Ex02_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>numeric_data <span class="ot">&lt;-</span> <span class="fu">st_drop_geometry</span>(tourism_economy_sf)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"average"</span>, <span class="st">"single"</span>, <span class="st">"complete"</span>, <span class="st">"ward"</span>)</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(m) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"average"</span>, <span class="st">"single"</span>, <span class="st">"complete"</span>, <span class="st">"ward"</span>)</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>ac <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">agnes</span>(numeric_data, <span class="at">method =</span> x)<span class="sc">$</span>ac</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>agglomerative_coefficients <span class="ot">&lt;-</span> <span class="fu">map_dbl</span>(m, ac)</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(agglomerative_coefficients)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  average    single  complete      ward 
+0.9991829 0.9971421 0.9993326 0.9998507 </code></pre>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(agglomerative_coefficients, <span class="st">"/Users/yuhu/Desktop/Geospatial Analytics and Applications/agglomerative_coefficients.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>agglomerative_coefficients <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"/Users/yuhu/Desktop/Geospatial Analytics and Applications/agglomerative_coefficients.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>We perform hierarchical clustering on tourism-related data for Thai provinces to identify patterns and groupings. Key numeric columns, such as tourist numbers and revenue, are selected from the tourism_economy_sf dataset, excluding the geometry column. These columns are grouped by province, and the mean values for each variable are calculated to create a summary at the provincial level. To ensure comparability, the data is standardized using scale(). We then compute a Euclidean distance matrix to measure dissimilarities between provinces, and hierarchical clustering is applied using the ward.D method, which minimizes within-cluster variance. The results are visualized through a dendrogram, with four clusters highlighted for visual inspection of the groupings. Finally, we calculate agglomerative coefficients for different clustering methods (average, single, complete, and ward) using the agnes() function, which helps assess clustering effectiveness and offers insights into the most suitable approach for this tourism data.</p>
+</section>
+<section id="compute-the-euclidean-distance-matrix" class="level3">
+<h3 data-anchor-id="compute-the-euclidean-distance-matrix"><strong>4.4.3 Compute the Euclidean distance matrix</strong></h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>numeric_columns <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"no_tourist_stay"</span>, <span class="st">"no_tourist_all"</span>, <span class="st">"no_tourist_thai"</span>,<span class="st">"no_tourist_foreign"</span>, <span class="st">"revenue_all"</span>, <span class="st">"revenue_thai"</span>,<span class="st">"revenue_foreign"</span>)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>numeric_data <span class="ot">&lt;-</span> tourism_economy_sf <span class="sc">%&gt;%</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">%&gt;%</span>  </span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">all_of</span>(numeric_columns)) <span class="sc">%&gt;%</span> </span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), as.numeric))</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>dist_matrix <span class="ot">&lt;-</span> <span class="fu">dist</span>(<span class="fu">scale</span>(numeric_data), <span class="at">method =</span> <span class="st">"euclidean"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>hclust_model <span class="ot">&lt;-</span> <span class="fu">hclust</span>(dist_matrix, <span class="at">method =</span> <span class="st">"ward.D"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>In this stage of the analysis, we prepare the data and apply hierarchical clustering using the Ward method. We start by selecting key numeric columns related to tourism, such as tourist numbers and revenue, from the tourism_economy_sf dataset, excluding the spatial geometry column with st_drop_geometry(). The selected columns are converted to numeric format to ensure consistency. We then compute a Euclidean distance matrix using the dist() function, standardizing the data with scale() for comparability across variables. This distance matrix reflects the dissimilarities between provinces based on their tourism indicators. Finally, hierarchical clustering is performed using the hclust() function with the ward.D method, which minimizes within-cluster variance, allowing us to identify compact and distinct clusters.</p>
+</section>
+<section id="plot-the-gap-statistic" class="level3">
+<h3 data-anchor-id="plot-the-gap-statistic"><strong>4.4.4 Plot the Gap statistic</strong></h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>gap_stat <span class="ot">&lt;-</span> <span class="fu">clusGap</span>(numeric_data, <span class="at">FUN =</span> kmeans, <span class="at">K.max =</span> <span class="dv">10</span>, <span class="at">B =</span> <span class="dv">100</span>)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gap_stat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Take-home_Ex02_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In this section, we apply the k-means algorithm to determine the optimal number of clusters for the tourism data. Using the clusGap() function, we calculate the Gap Statistic, which assesses the total within-cluster variation across different cluster counts, up to a maximum of 10. By running the k-means algorithm multiple times (B = 100), the Gap Statistic measures the improvement in clustering relative to a random data distribution. The results are visualized in a plot, where the optimal number of clusters is indicated by the maximum value of the Gap Statistic, representing the best fit for the data.</p>
+</section>
+<section id="draw-a-cluster-dendrogram" class="level3">
+<h3 data-anchor-id="draw-a-cluster-dendrogram"><strong>4.4.5 Draw a cluster dendrogram</strong></h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>dist_matrix <span class="ot">&lt;-</span> <span class="fu">dist</span>(<span class="fu">scale</span>(numeric_data), <span class="at">method =</span> <span class="st">"euclidean"</span>)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>hclust_model <span class="ot">&lt;-</span> <span class="fu">hclust</span>(dist_matrix, <span class="at">method =</span> <span class="st">"ward.D"</span>)</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hclust_model, <span class="at">labels =</span> tourism_economy_sf<span class="sc">$</span>province_eng, <span class="at">main =</span> <span class="st">"Cluster Dendrogram by Province"</span>, <span class="at">sub =</span> <span class="st">""</span>, <span class="at">xlab =</span> <span class="st">""</span>, <span class="at">cex =</span> <span class="fl">0.6</span>)</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a><span class="fu">rect.hclust</span>(hclust_model, <span class="at">k =</span> <span class="dv">4</span>, <span class="at">border =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Take-home_Ex02_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In this section, we conduct hierarchical clustering on tourism-related data and visualize the results. A Euclidean distance matrix is calculated from the standardized numeric_data, ensuring consistent scaling across variables. We then apply the ward.D method for hierarchical clustering to minimize within-cluster variance. The clustering outcomes are visualized through a dendrogram with province labels, revealing their relationships. To further illustrate the clusters, four distinct groups are highlighted with red borders using rect.hclust(), allowing for clear identification of province groupings based on tourism characteristics.</p>
+</section>
+<section id="visualizing-clustering-results" class="level3">
+<h3 data-anchor-id="visualizing-clustering-results"><strong>4.4.6 Visualizing clustering results</strong></h3>
+<p>```fwl,eval=FALSE} optimal_k &lt;- 8</p>
+<p>kmeans_model &lt;- kmeans(numeric_data, centers = optimal_k, nstart = 25)</p>
+<p>tourism_economy_sf<span class="math inline">\(cluster &lt;- kmeans_model\)</span>cluster</p>
+<p>library(tmap) tm_shape(tourism_economy_sf) + tm_polygons(“cluster”) + tm_facets(by = “year”, free.coords = FALSE) + tm_layout(title = “Tourism Economy Clusters by Year”)</p>
+<pre><code>
+In this section, we perform K-means clustering on the tourism-related data and visualize the results spatially. The optimal number of clusters is set to 8, as determined previously. The kmeans() function is used to perform the clustering with 25 random starts to ensure stability in the clustering outcome. The resulting cluster assignments are added to the tourism_economy_sf dataset as a new column.
+
+### **4.4.7 Calculate the coordinates of the center point of a geometry**
+
+```{r},eval=FALSE
+geometry_data &lt;- st_geometry(tourism_economy_sf)
+
+shan_nb &lt;- poly2nb(geometry_data)
+
+summary(shan.nb)</code></pre>
+<pre class="fwl,eval=false"><code>saveRDS(shan.nb,"/Users/yuhu/Desktop/Geospatial Analytics and Applications/shan_nb.rds")</code></pre>
+<pre class="fwl,eval=false"><code>shan.nb &lt;- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/shan_nb.rds")</code></pre>
+<p>In this section, we calculate the spatial neighbor relationships between provinces using their geometries. The poly2nb() function is applied to identify neighboring provinces based on their boundaries. The resulting neighbor object is saved as an RDS file for future use, and later reloaded for further analysis. Additionally, the centroid coordinates of each province are calculated, which provides central point locations that can be used in spatial visualizations or further spatial analyses.</p>
+</section>
+<section id="draw-geographic-boundaries-and-neighbor-connections" class="level3">
+<h3 data-anchor-id="draw-geographic-boundaries-and-neighbor-connections"><strong>4.4.8 Draw geographic boundaries and neighbor connections</strong></h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>adm1.nb <span class="ot">&lt;-</span> <span class="fu">poly2nb</span>(adm1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in poly2nb(adm1): some observations have no neighbours;
+if this seems unexpected, try increasing the snap argument.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in poly2nb(adm1): neighbour object has 2 sub-graphs;
+if this sub-graph count seems unexpected, try increasing the snap argument.</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>coords <span class="ot">&lt;-</span> <span class="fu">st_coordinates</span>(<span class="fu">st_centroid</span>(<span class="fu">st_geometry</span>(adm1)))</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">length</span>(adm1.nb) <span class="sc">==</span> <span class="fu">nrow</span>(coords)) {</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="fu">st_geometry</span>(adm1), <span class="at">border =</span> <span class="fu">grey</span>(<span class="fl">0.5</span>))  </span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(adm1.nb, coords, <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)  </span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"NO,ERROR"</span>)</span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Take-home_Ex02_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In this section, we determine the neighboring relationships between provinces using poly2nb() and visualize these connections over the province boundaries. After calculating the centroids of each province, we verify that the neighbor list corresponds to the number of centroid points. If the counts align, we plot the province boundaries with neighbor connections to illustrate spatial relationships; otherwise, an error is triggered to indicate a data mismatch.</p>
+</section>
+<section id="draw-a-minimum-spanning-tree" class="level3">
+<h3 data-anchor-id="draw-a-minimum-spanning-tree"><strong>4.4.9 Draw a minimum spanning tree</strong></h3>
+<pre class="fwl,eval=false"><code>geometry_data &lt;- st_geometry(tourism_economy_sf)
+
+
+years &lt;- unique(tourism_economy_sf$year)
+
+
+if (inherits(shan.nb, "nb")) {
+  
+  for (year in years) {
+
+    yearly_data &lt;- tourism_economy_sf[tourism_economy_sf$year == year, ]
+    
+
+    valid_nb_nodes &lt;- sapply(shan.nb, length) &gt; 0
+    filtered_nb &lt;- subset.nb(shan.nb, valid_nb_nodes)
+    coords &lt;- st_coordinates(st_centroid(geometry_data[valid_nb_nodes]))
+
+    print(paste("Year:", year))
+    print(length(valid_nb_nodes))
+    print(length(yearly_data$revenue_all))
+    print(length(filtered_nb))
+
+    if (any(is.na(yearly_data$revenue_all))) {
+      stop(paste("There are NA values in the revenue_all column for year", year, ". Please clean the data."))
+    }
+
+    yearly_lcosts &lt;- nbcosts(filtered_nb, yearly_data$revenue_all[valid_nb_nodes])
+
+    yearly_w &lt;- nb2listw(filtered_nb, yearly_lcosts, style = "B")
+
+    yearly_mst &lt;- mstree(yearly_w)
+
+    png_filename &lt;- paste0("Minimum_Spanning_Tree_", year, ".png")
+    print(png_filename)  
+    png(png_filename, width = 800, height = 800)  
+
+    plot(st_geometry(geometry_data[valid_nb_nodes]), border = grey(0.5)) 
+    plot.mst(yearly_mst, coords, col = "blue", cex.lab = 0.7, cex.circles = 0.005, add = TRUE)
+
+    title(main = paste("Minimum Spanning Tree using revenue_all for year", year))
+
+    dev.off()  
+  }
+
+} else {
+  stop("The object shan.nb is not a valid nb object.")
+}</code></pre>
+<p>In this section, we construct the minimum spanning tree (MST) for each year to visualize spatial relationships between provinces based on tourism revenue. The dataset is filtered by year, and neighboring provinces are identified. Revenue data is checked for completeness before calculating edge costs between neighbors. With these costs, a spatial weights matrix is created, enabling the MST calculation to highlight the most efficient connections in terms of tourism revenue.</p>
+</section>
+</section>
+<section id="local-spatial-autocorrelation-analysis" class="level2">
+<h2 data-anchor-id="local-spatial-autocorrelation-analysis"><strong>4.2 Local spatial autocorrelation analysis</strong></h2>
+<section id="morans-i" class="level3">
+<h3 data-anchor-id="morans-i"><strong>4.2.1 Moran’s I</strong></h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(tourism_economy_sf<span class="sc">$</span>year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+2019 2020 2021 2022 2023 
+ 924  924  924  924  154 </code></pre>
+</div>
+</div>
+<pre class="fwl,eval=false"><code>data_2019 &lt;- tourism_economy_sf[tourism_economy_sf$year == 2019, ]
+
+data_2019_selected &lt;- data_2019 %&gt;%
+  select(province_eng, year, no_tourist_all, revenue_all)
+
+
+
+nb_2019 &lt;- poly2nb(data_2019_selected)
+
+saveRDS(nb_2019, "data/nb_2019.rds")
+
+data_2020 &lt;- tourism_economy_sf[tourism_economy_sf$year == 2020, ]
+
+data_2020_selected &lt;- data_2020 %&gt;%
+  select(province_eng, year, no_tourist_all, revenue_all)
+
+
+nb_2020 &lt;- poly2nb(data_2020_selected)
+
+saveRDS(nb_2020, "data/nb_2020.rds")
+
+data_2021 &lt;- tourism_economy_sf[tourism_economy_sf$year == 2021, ]
+
+data_2021_selected &lt;- data_2021 %&gt;%
+  select(province_eng, year, no_tourist_all, revenue_all)
+
+
+nb_2021 &lt;- poly2nb(data_2021_selected)
+
+saveRDS(nb_2021, "data/nb_2021.rds")
+
+
+data_2022 &lt;- tourism_economy_sf[tourism_economy_sf$year == 2022, ]
+
+data_2022_selected &lt;- data_2022 %&gt;%
+  select(province_eng, year, no_tourist_all, revenue_all)
+
+
+nb_2022 &lt;- poly2nb(data_2022_selected)
+
+saveRDS(nb_2022, "data/nb_2022.rds")
+
+
+data_2023 &lt;- tourism_economy_sf[tourism_economy_sf$year == 2023, ]
+
+data_2023_selected &lt;- data_2023 %&gt;%
+  select(province_eng, year, no_tourist_all, revenue_all)
+
+
+nb_2023 &lt;- poly2nb(data_2023_selected)
+
+saveRDS(nb_2023, "data/nb_2023.rds")</code></pre>
+<pre class="fwl,eval=false"><code>nb_2019 &lt;- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/nb_2019.rds")
+nb_2020 &lt;- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/nb_2020.rds")
+nb_2023 &lt;- readRDS("/Users/yuhu/Desktop/Geospatial Analytics and Applications/nb_2023.rds")</code></pre>
+<pre class="fwl,eval=false"><code>weights_list_2019 &lt;- nb2listw(nb_2019, style = "W", zero.policy = TRUE)
+
+year &lt;- 2019
+data_2019 &lt;- tourism_economy_sf[tourism_economy_sf$year == year, ]
+
+moran_i_test_2019 &lt;- moran.test(data_2019$revenue_all, listw = weights_list_2019, zero.policy = TRUE, na.action = na.omit)
+
+print(paste("Moran's I Test for year:", year))</code></pre>
+<pre class="fwl,eval=false"><code>print(moran_i_test_2019)</code></pre>
+<pre class="fwl,eval=false"><code>weights_list_2019 &lt;- nb2listw(nb_2019, style = "W", zero.policy = TRUE)
+
+year_2019 &lt;- 2019
+data_2019 &lt;- tourism_economy_sf[tourism_economy_sf$year == year_2019, ]
+
+set.seed(1234)
+moran_mc_simulation_2019 &lt;- moran.mc(data_2019$revenue_all, listw = weights_list_2019, nsim = 999, zero.policy = TRUE, na.action = na.omit)
+
+print(paste("Monte Carlo Moran's I for year:", year_2019))</code></pre>
+<pre class="fwl,eval=false"><code>print(moran_mc_simulation_2019)</code></pre>
+<pre class="fwl,eval=false"><code>weights_list_2019 &lt;- nb2listw(nb_2019, style = "W", zero.policy = TRUE)
+
+year_2019 &lt;- 2019
+data_2019 &lt;- tourism_economy_sf[tourism_economy_sf$year == year_2019, ]
+
+set.seed(1234)
+moran_mc_simulation_2019 &lt;- moran.mc(data_2019$revenue_all, listw = weights_list_2019, nsim = 999, zero.policy = TRUE, na.action = na.omit)
+
+moran_mc_values_2019 &lt;- moran_mc_simulation_2019$res[1:999]
+
+simulation_df_2019 &lt;- data.frame(simulated_values = moran_mc_values_2019)
+
+moran_mean_2019 &lt;- mean(moran_mc_values_2019)
+
+ggplot(simulation_df_2019, aes(x = simulated_values)) +
+  geom_histogram(bins = 20, fill = "blue", color = "black", alpha = 0.7) +
+  geom_vline(xintercept = moran_mean_2019, color = "red", linetype = "dashed", size = 1) +
+  labs(title = paste("Monte Carlo Moran's I Simulation - Year", year_2019),
+       x = "Simulated Moran's I", y = "Frequency") +
+  theme_minimal()</code></pre>
+<p>We use the ClustGeo method to apply spatially constrained clustering on tourism revenue data for each year. First, we filter the data by year and compute a proximity matrix based on revenue, alongside a distance matrix derived from spatial data. Using the choicealpha function, we determine the optimal balance between spatial and non-spatial clustering constraints. Hierarchical clustering with spatial constraints is then performed, and the resulting clusters are integrated back into the dataset. We visualize these spatial clusters with the tmap package and display both hierarchical and spatially constrained clusters side by side for each year. This comparison highlights the impact of spatial constraints on cluster formation, offering insights into the clustering outcomes.</p>
+</section>
+<section id="gearys-c" class="level3">
+<h3 data-anchor-id="gearys-c"><strong>4.4.2 Geary’s C</strong></h3>
+<pre class="fwl,eval=false"><code>analyze_geary_by_year &lt;- function(year, nb_data) {
+
+  yearly_data &lt;- tourism_economy_sf[tourism_economy_sf$year == year, ]
+
+  weights_list_year &lt;- nb2listw(nb_data, style = "W", zero.policy = TRUE)
+  
+  cat("Processing year:", year, "\n")
+
+  geary_c_test &lt;- geary.test(yearly_data$revenue_all, listw = weights_list_year)
+  print(geary_c_test)
+
+  set.seed(1234)
+  geary_mc_simulation &lt;- geary.mc(yearly_data$revenue_all, listw = weights_list_year, nsim = 999)
+  print(geary_mc_simulation)
+
+  hist(geary_mc_simulation$res, freq = TRUE, breaks = 20, 
+       xlab = "Simulated Geary C", 
+       main = paste("Monte Carlo Geary's C Simulation - Year", year))
+  abline(v = mean(geary_mc_simulation$res), col = "red", lwd = 2)
+  
+  cat("Completed year:", year, "\n")
+}
+
+analyze_geary_by_year(2019, nb_2019)  </code></pre>
+</section>
+<section id="local-indicator-of-spatial-association-lisa" class="level3">
+<h3 data-anchor-id="local-indicator-of-spatial-association-lisa"><strong>4.4.3 Local Indicator of Spatial Association LISA</strong></h3>
+<pre class="fwl,eval=false"><code>for (year in c(2019, 2020, 2023)) {
+
+  yearly_data &lt;- tourism_economy_sf[tourism_economy_sf$year == year, ]
+
+  if (year == 2019) {
+    shan.nb &lt;- nb_2019
+  } else if (year == 2020) {
+    shan.nb &lt;- nb_2020
+  } else if (year == 2023) {
+    shan.nb &lt;- nb_2023
+  }
+
+  weights_list &lt;- nb2listw(shan.nb, style = "W", zero.policy = TRUE)
+
+  cat("Processed neighbors and weights for year:", year, "\n")
+}</code></pre>
+<pre class="fwl,eval=false"><code>for (year in c(2019, 2020, 2023)) {
+  
+  if (year == 2019) {
+    weights_list &lt;- nb2listw(nb_2019, style = "W", zero.policy = TRUE)
+  } else if (year == 2020) {
+    weights_list &lt;- nb2listw(nb_2020, style = "W", zero.policy = TRUE)
+  } else if (year == 2023) {
+    weights_list &lt;- nb2listw(nb_2023, style = "W", zero.policy = TRUE)
+  }
+
+  yearly_data &lt;- tourism_economy_sf[tourism_economy_sf$year == year, ]
+
+  local_moran &lt;- localmoran(yearly_data$revenue_all, weights_list)
+
+  yearly_data$Ii &lt;- local_moran[, 1]
+  yearly_data$Pr_ii &lt;- local_moran[, 5]
+
+  local_moran_map &lt;- tm_shape(yearly_data) +
+    tm_fill(col = "Ii", style = "pretty", palette = "RdBu", title = paste("Local Moran's I - Year", year)) +
+    tm_borders(alpha = 0.5)
+
+  local_moran_p_map &lt;- tm_shape(yearly_data) +
+    tm_fill(col = "Pr_ii", breaks = c(-Inf, 0.001, 0.01, 0.05, 0.1, Inf), palette = "-Blues", title = "Local Moran's I p-values") +
+    tm_borders(alpha = 0.5)
+
+  tmap_arrange(local_moran_map, local_moran_p_map, asp = 1, ncol = 2)
+
+  yearly_data$lag_revenue &lt;- lag.listw(weights_list, yearly_data$revenue_all)
+  quadrant &lt;- vector(mode = "numeric", length = nrow(local_moran))
+  DV &lt;- yearly_data$lag_revenue - mean(yearly_data$lag_revenue)
+  LM_I &lt;- local_moran[, 1]
+  signif_level &lt;- 0.05
+  
+  quadrant[DV &lt; 0 &amp; LM_I &gt; 0] &lt;- 1  
+  quadrant[DV &gt; 0 &amp; LM_I &lt; 0] &lt;- 2  
+  quadrant[DV &lt; 0 &amp; LM_I &lt; 0] &lt;- 3  
+  quadrant[DV &gt; 0 &amp; LM_I &gt; 0] &lt;- 4  
+  quadrant[local_moran[, 5] &gt; signif_level] &lt;- 0  
+
+  yearly_data$quadrant &lt;- quadrant
+
+  LISA_map &lt;- tm_shape(yearly_data) +
+    tm_fill(col = "quadrant", style = "cat", 
+            palette = c("#ffffff", "#2c7bb6", "#abd9e9", "#fdae61", "#d7191c")[c(sort(unique(quadrant)) + 1)], 
+            labels = c("insignificant", "low-low", "low-high", "high-low", "high-high")[c(sort(unique(quadrant)) + 1)]) +
+    tm_borders(alpha = 0.5)
+
+  print(LISA_map)
+  
+  cat("Completed Local Moran's I and LISA analysis for year:", year, "\n")
+}</code></pre>
+</section>
+<section id="visualize-hotspot-changes" class="level3">
+<h3 data-anchor-id="visualize-hotspot-changes"><strong>4.4.4 Visualize hotspot changes</strong></h3>
+<pre class="fwl,eval=false"><code>for (year in c(2019, 2020, 2023)) {
+
+  if (year == 2019) {
+    weights_list &lt;- nb2listw(nb_2019, style = "B", zero.policy = TRUE)
+  } else if (year == 2020) {
+    weights_list &lt;- nb2listw(nb_2020, style = "B", zero.policy = TRUE)
+  } else if (year == 2023) {
+    weights_list &lt;- nb2listw(nb_2023, style = "B", zero.policy = TRUE)
+  }
+
+  yearly_data &lt;- tourism_economy_sf[tourism_economy_sf$year == year, ]
+
+  gi_fixed &lt;- localG(yearly_data$revenue_all, weights_list)
+
+  yearly_data$gi_stat &lt;- as.numeric(gi_fixed)
+
+  hotspot_map &lt;- tm_shape(yearly_data) +
+    tm_fill(col = "gi_stat", 
+            style = "pretty", 
+            palette = "-RdBu", 
+            title = paste("Hot/Cold Spots (Gi*) -", year)) +
+    tm_borders(alpha = 0.5)
+
+  print(hotspot_map)
+  
+  cat("Completed Getis-Ord Gi* hotspot analysis for year:", year, "\n")
+}</code></pre>
+<p>Completed Getis-Ord Gi* hotspot analysis for year: 2019</p>
+<p>In this section, we conduct a Getis-Ord Gi* hotspot analysis to identify hot and cold spots of tourism revenue for 2019. The dataset is filtered, and the centroids of the provinces are used to create a distance-based neighbors list, considering only neighboring provinces within a 50 km threshold. The neighbors’ spatial weights are computed, and the Getis-Ord Gi* statistic is calculated for the revenue_all variable, revealing statistically significant clusters of high (hot spots) and low (cold spots) values. The Gi* results are added to the dataset and visualized on a map, using a red-blue color palette to represent the hot and cold spots for each year. This analysis highlights spatial patterns in tourism revenue across different time periods.</p>
+</section>
+</section>
+</section>
+<section id="conclusion" class="level1">
+<h1><strong>5 Conclusion</strong></h1>
+<p>Thailand’s tourism sector has been a cornerstone of its economic growth, significantly contributing to GDP and employment. The COVID-19 pandemic, however, led to a sharp drop in tourist arrivals and revenue, severely affecting this industry. In response, the government introduced financial relief and recovery strategies, focusing on hygiene standards and exploring travel bubbles with key regional markets to rebuild consumer confidence and stimulate tourism.</p>
+<p>Geospatial analysis can provide valuable insights into the shifts in tourism activity, especially when comparing pre- and post-pandemic data. Techniques like global and local spatial autocorrelation, hotspot analysis, and clustering can highlight spatial patterns and dependencies in the recovery process, influenced by factors such as regional infrastructure, policy measures, and travel restrictions.</p>
+<p>Ultimately, understanding these spatial dynamics will be critical for Thailand’s tourism recovery strategy, enabling targeted support for the hardest-hit areas. By leveraging spatial data and analytics, Thailand can enhance both domestic and international tourism in a way that promotes resilience and sustainable growth across regions.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
