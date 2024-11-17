@@ -12,6 +12,10 @@ listing:
   - id: Hands-on_Exercise
     contents: 
       - "Hands-on_EX/*/*.qmd"
+      - "Hand-on_Ex01_a.qmd"
+      - "Hand-on_Ex01_b.qmd"
+      - "Hands-on_Ex05_b.qmd"
+      - "Hands-on_EX10_b.qmd"
     sort:
       - "title"
     type: grid
