@@ -128,7 +128,7 @@ ul.task-list li input[type="checkbox"] {
   
 
   window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-Take-home_Exercise .list');
+    const listingTargetEl = window.document.querySelector('#listing-Take-home Exercise .list');
     if (!listingTargetEl) {
       // No listing discovered, do not attach.
       return; 
@@ -137,11 +137,11 @@ ul.task-list li input[type="checkbox"] {
     const options = {
       valueNames: ['listing-image','listing-date','listing-title','listing-author',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
       
-      searchColumns: ["listing-title","listing-author","listing-image","listing-description"],
+      searchColumns: [],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-Take-home_Exercise'] = new List('listing-Take-home_Exercise', options);
+    window['quarto-listings']['listing-Take-home Exercise'] = new List('listing-Take-home Exercise', options);
 
     if (window['quarto-listing-loaded']) {
       window['quarto-listing-loaded']();
@@ -387,7 +387,7 @@ No matching items
 <div class="g-col-1" data-index="0" data-listing-date-sort="1724083200000" data-listing-file-modified-sort="1731586028980" data-listing-date-modified-sort="1731586028000" data-listing-reading-time-sort="1" data-listing-word-count-sort="90">
 <a href="./In-class_EX/In-class_EX01/In-class_EX01.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
-<div class="listing-item-img-placeholder card-img-top" style="height: 150px;">&nbsp;</div>
+<!-- img(9CEB782EFEE6)[progressive=false, height=150px]:In-class_Exercise:In-class_EX/In-class_EX01/In-class_EX01.html -->
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
 In-class Exercise01
@@ -407,7 +407,7 @@ Aug 20, 2024
 <div class="g-col-1" data-index="1" data-listing-file-modified-sort="1731584492538" data-listing-reading-time-sort="4" data-listing-word-count-sort="723">
 <a href="./In-class_EX/In-class_EX05/In-class_EX05.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="In-class_EX/In-class_EX05/In-class_EX05_files/figure-html/unnamed-chunk-5-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<!-- img(9CEB782EFEE6)[progressive=false, height=150px]:In-class_Exercise:In-class_EX/In-class_EX05/In-class_EX05.html -->
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
 In-class-Ex05
@@ -424,7 +424,7 @@ HuYu
 <div class="g-col-1" data-index="2" data-listing-file-modified-sort="1731586114267" data-listing-reading-time-sort="4" data-listing-word-count-sort="626">
 <a href="./In-class_EX/In-class_EX06/In-class_EX06.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="In-class_EX/In-class_EX06/In-class_EX06_files/figure-html/unnamed-chunk-10-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<!-- img(9CEB782EFEE6)[progressive=false, height=150px]:In-class_Exercise:In-class_EX/In-class_EX06/In-class_EX06.html -->
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
 In-class-Ex06
@@ -441,7 +441,7 @@ HuYu
 <div class="g-col-1" data-index="3" data-listing-file-modified-sort="1731586311828" data-listing-reading-time-sort="11" data-listing-word-count-sort="2057">
 <a href="./In-class_EX/In-class_EX08/In-class_EX08.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="In-class_EX/In-class_EX08/In-class_EX08_files/figure-html/unnamed-chunk-7-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<!-- img(9CEB782EFEE6)[progressive=false, height=150px]:In-class_Exercise:In-class_EX/In-class_EX08/In-class_EX08.html -->
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
 In_Class_Execise08
@@ -458,7 +458,7 @@ In_Class_Execise08
 <div class="g-col-1" data-index="4" data-listing-file-modified-sort="1730659545000" data-listing-reading-time-sort="3" data-listing-word-count-sort="415">
 <a href="./In-class_EX/In-class_EX03/In-class_Ex03.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="In-class_EX/In-class_EX03/In-class_Ex03_files/figure-html/unnamed-chunk-6-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<!-- img(9CEB782EFEE6)[progressive=false, height=150px]:In-class_Exercise:In-class_EX/In-class_EX03/In-class_Ex03.html -->
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
 In_class_EX03
@@ -475,7 +475,7 @@ HuYu
 <div class="g-col-1" data-index="5" data-listing-file-modified-sort="1731585224311" data-listing-reading-time-sort="10" data-listing-word-count-sort="1902">
 <a href="./In-class_EX/In-class_EX07/In-class_EX07.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="In-class_EX/In-class_EX07/In-class_EX07_files/figure-html/unnamed-chunk-6-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<!-- img(9CEB782EFEE6)[progressive=false, height=150px]:In-class_Exercise:In-class_EX/In-class_EX07/In-class_EX07.html -->
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
 In_class_EX07
@@ -492,7 +492,7 @@ In_class_EX07
 <div class="g-col-1" data-index="6" data-listing-file-modified-sort="1731584575366" data-listing-reading-time-sort="1" data-listing-word-count-sort="93">
 <a href="./In-class_EX/In-class_EX02/In-class_Ex02.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
-<div class="listing-item-img-placeholder card-img-top" style="height: 150px;">&nbsp;</div>
+<!-- img(9CEB782EFEE6)[progressive=false, height=150px]:In-class_Exercise:In-class_EX/In-class_EX02/In-class_Ex02.html -->
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
 In_class_Ex02
@@ -509,7 +509,7 @@ HuYu
 <div class="g-col-1" data-index="7" data-listing-file-modified-sort="1726495780000" data-listing-reading-time-sort="2" data-listing-word-count-sort="380">
 <a href="./In-class_EX/In-class_EX04/In-class_EX04.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="In-class_EX/In-class_EX04/In-class_EX04_files/figure-html/unnamed-chunk-10-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<!-- img(9CEB782EFEE6)[progressive=false, height=150px]:In-class_Exercise:In-class_EX/In-class_EX04/In-class_EX04.html -->
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
 In_class_Ex04
@@ -526,7 +526,7 @@ huyu
 <div class="g-col-1" data-index="8" data-listing-file-modified-sort="1730976251000" data-listing-reading-time-sort="4" data-listing-word-count-sort="741">
 <a href="./In-class_EX/In-class_EX09/In-class_EX09.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
-<div class="listing-item-img-placeholder card-img-top" style="height: 150px;">&nbsp;</div>
+<!-- img(9CEB782EFEE6)[progressive=false, height=150px]:In-class_Exercise:In-class_EX/In-class_EX09/In-class_EX09.html -->
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
 In_class_Ex09
@@ -544,59 +544,9 @@ In_class_Ex09
 <div class="listing-no-matching d-none">
 No matching items
 </div>
-</div><div class="quarto-listing quarto-listing-container-grid" id="listing-Take-home_Exercise">
+</div><div class="quarto-listing quarto-listing-container-grid" id="listing-Take-home Exercise">
 <div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-listing-file-modified-sort="1731671105113" data-listing-reading-time-sort="33" data-listing-word-count-sort="6530">
-<a href="./Take-home_Ex/Take-home_Ex01/Take-home_Exercise_1.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="Take-home_Ex/Take-home_Ex01/Take-home_Exercise_1_files/figure-html/unnamed-chunk-43-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Take-home Exercise 1
-</h5>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-Hu Yu
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="1" data-listing-file-modified-sort="1731825680538" data-listing-reading-time-sort="21" data-listing-word-count-sort="4126">
-<a href="./Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<div class="listing-item-img-placeholder card-img-top" style="height: 150px;">&nbsp;</div>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Take-home-EX02
-</h5>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
 
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="2" data-listing-file-modified-sort="1731826564976" data-listing-reading-time-sort="36" data-listing-word-count-sort="7075">
-<a href="./Take-home_Ex/Take-home_Ex03/Take-home_Ex03.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="Take-home_Ex/Take-home_Ex03/Take-home_Ex03_files/figure-html/unnamed-chunk-21-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Take-home_Ex03
-</h5>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-HuYu
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
 </div>
 <div class="listing-no-matching d-none">
 No matching items
