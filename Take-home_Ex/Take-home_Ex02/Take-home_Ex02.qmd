@@ -77,8 +77,7 @@ library(dplyr)
 adm1 <- st_read(dsn = "/Users/yuhu/Desktop/Geospatial Analytics and Applications/TakeHome_EX02/tha_adm_rtsd_itos_20210121_shp",  
                 layer = "tha_admbnda_adm1_rtsd_20220121") %>%
         dplyr::select(c(1:3), 16, 17)
-
-    ```
+```
 
 ## **3.3 Data Wrangling - Geospatial Data**
 
@@ -242,16 +241,24 @@ class(numeric_data)
 
 
 ```{r}
+library(sf)
+library(dplyr)
+
+# 列名
 numeric_columns <- c("no_tourist_stay", "no_tourist_all", "no_tourist_thai", 
                      "no_tourist_foreign", "revenue_all", "revenue_thai", 
                      "revenue_foreign")
+
+# 去掉几何列并选择数值列
 numeric_data <- tourism_economy_sf %>%
   st_drop_geometry() %>%
   dplyr::select(all_of(numeric_columns)) %>%
   mutate(across(everything(), as.numeric))
 
+# 计算相关矩阵
 correlation_matrix <- cor(numeric_data, use = "complete.obs")
 
+# 可视化相关矩阵
 library(corrplot)
 corrplot(correlation_matrix, method = "ellipse", type = "upper", 
          tl.col = "black", tl.srt = 45, addCoef.col = "black")
@@ -266,28 +273,29 @@ This code calculates and visualizes the correlation between selected tourism-rel
 library(sf)
 library(dplyr)
 
+# 列名
 numeric_columns <- c("no_tourist_stay", "no_tourist_all", "no_tourist_thai", 
                      "no_tourist_foreign", "revenue_all", "revenue_thai", 
                      "revenue_foreign")
 
+# 去掉几何列并选择数值列
 numeric_data <- tourism_economy_sf %>%
   st_drop_geometry() %>%
   dplyr::select(all_of(numeric_columns)) %>%
   mutate(across(everything(), as.numeric))
 
+# 计算相关矩阵
 correlation_matrix <- cor(numeric_data, use = "complete.obs")
 
+# 可视化相关矩阵
 library(corrplot)
 corrplot(correlation_matrix, method = "ellipse", type = "upper", 
          tl.col = "black", tl.srt = 45, addCoef.col = "black")
 
 ```
-```{r}
-exists("numeric_data_scaled")
-```
 
 ```{r}
-distance_matrix <- dist(numeric_data, method = "euclidean")
+distance_matrix <- dist(numeric_data_scaled, method = "euclidean")
 
 hc <- hclust(distance_matrix, method = "ward.D")
 ```
@@ -368,7 +376,7 @@ In this section, we conduct hierarchical clustering on tourism-related data and 
 
 ### **4.4.6 Visualizing clustering results**
 
-```{r}
+```{r},eval=FALSE}
 optimal_k <- 8
 
 kmeans_model <- kmeans(numeric_data, centers = optimal_k, nstart = 25)
@@ -570,7 +578,7 @@ print(paste("Moran's I Test for year:", year))
 
 \[1\] "Moran's I Test for year: 2019"
 
-```{r},eval=FALSE}
+```{r}
 print(moran_i_test_2019)
 ```
 
@@ -599,7 +607,7 @@ print(paste("Monte Carlo Moran's I for year:", year_2019))
 
 \[1\] "Monte Carlo Moran's I for year: 2019"
 
-```{r},eval=FALSE}
+```{r}
 print(moran_mc_simulation_2019)
 ```
 
@@ -612,7 +620,7 @@ number of simulations + 1: 1000
 statistic = 0.21067, observed rank = 1000, p-value = 0.001
 alternative hypothesis: greater
 
-```{r},eval=FALSE}
+```{r}
 weights_list_2019 <- nb2listw(nb_2019, style = "W", zero.policy = TRUE)
 
 year_2019 <- 2019
@@ -635,7 +643,6 @@ ggplot(simulation_df_2019, aes(x = simulated_values)) +
   theme_minimal()
 ```
 
-![](https://isss626-zhangchenbin.netlify.app/take-home_ex/take-home_ex02/Take-home_Ex02_files/figure-html/unnamed-chunk-48-1.png)
 
 We use the ClustGeo method to apply spatially constrained clustering on tourism revenue data for each year. First, we filter the data by year and compute a proximity matrix based on revenue, alongside a distance matrix derived from spatial data. Using the choicealpha function, we determine the optimal balance between spatial and non-spatial clustering constraints. Hierarchical clustering with spatial constraints is then performed, and the resulting clusters are integrated back into the dataset. We visualize these spatial clusters with the tmap package and display both hierarchical and spatially constrained clusters side by side for each year. This comparison highlights the impact of spatial constraints on cluster formation, offering insights into the clustering outcomes.
 
@@ -691,7 +698,6 @@ number of simulations + 1: 1000
 statistic = 0.88728, observed rank = 1, p-value = 0.001
 alternative hypothesis: greater
 
-![](https://isss626-zhangchenbin.netlify.app/take-home_ex/take-home_ex02/Take-home_Ex02_files/figure-html/unnamed-chunk-51-1.png)
 
 Completed year: 2019
 
@@ -774,11 +780,9 @@ for (year in c(2019, 2020, 2023)) {
 }
 ```
 
-![](https://isss626-zhangchenbin.netlify.app/take-home_ex/take-home_ex02/Take-home_Ex02_files/figure-html/unnamed-chunk-53-1.png)
 
-Completed Local Moran's I and LISA analysis for year: 2019
 
-![](https://isss626-zhangchenbin.netlify.app/take-home_ex/take-home_ex02/Take-home_Ex02_files/figure-html/unnamed-chunk-53-2.png)
+
 
 ### **4.4.4 Visualize hotspot changes**
 
@@ -812,7 +816,6 @@ for (year in c(2019, 2020, 2023)) {
 }
 ```
 
-![](https://isss626-zhangchenbin.netlify.app/take-home_ex/take-home_ex02/Take-home_Ex02_files/figure-html/unnamed-chunk-54-1.png)
 
 Completed Getis-Ord Gi\* hotspot analysis for year: 2019
 
