@@ -1,0 +1,1088 @@
+---
+title: "Take-home_Ex03"
+author: "HuYu"
+---
+
+# **Take-home Exercise 3a: Modelling Geography of Financial Inclusion with Geographically Weighted Methods**
+
+## **1 Introduction**
+
+The 2023 FinScope survey, the fifth iteration in its series, was collaboratively conducted by the Bank of Uganda, Financial Sector Deepening Uganda, the Uganda Bureau of Statistics, Abi Finance, the Ministry of Finance, Planning and Economic Development, and other major stakeholders. It offers an in-depth analysis of financial inclusion among Ugandans aged 16 and older.
+
+Since its launch in 2006, FinScope surveys have been conducted five times in Uganda, with the most recent one in 2023. This nationally representative survey explores how individuals generate income, manage their resources, and utilize formal and informal financial services.
+
+Beyond examining financial practices, the survey delves into people’s perceptions and attitudes toward money management and financial products. It also collects demographic and lifestyle data to provide a comprehensive understanding of financial needs, preferences, and behaviors. FinScope serves as a vital tool for those looking for credible data on financial access, usage trends, and benchmarks.
+
+## **2 Setting the Scene**
+
+Financial inclusion, as defined by Wikipedia, refers to ensuring that individuals and businesses have equal access to financial services. It involves making financial products and services—such as banking, loans, equity, and insurance—accessible, affordable, and timely for everyone. By extending these opportunities to the unbanked population, financial inclusion fosters economic growth and inclusivity. It enables individuals to save, invest, and secure insurance, ultimately helping to improve household income and reduce income inequality.
+
+## **3 The Task**
+
+In this take-home exercise, we are required to build an explanatory model to determine factors affecting financial inclusion by using geographical weighted regression methods.
+
+## **4 Get start**
+
+### **4.1 The Data**
+
+For the purpose of this take-home exercise, either[FinScope Uganda 2023](https://fsduganda.or.ug/data-sets-finscope-uganda-2023-survey-report/)should be used. The study should be conducted at the district level. The district level boundary GIS data can be downloaded from[geoBoundaries](https://www.geoboundaries.org/)portal.
+
+### **4.2 Setting the Analytical Tools**
+
+```{r}
+pacman::p_load(tidyverse, sf, httr, jsonlite, rvest, readxl, spdep, tmap, ClustGeo, parallel,ggpubr, cluster, factoextra, NbClust, ggplot2, pheatmap, heatmaply, corrplot, psych, tidyverse, GGally, spacetime, reader, SpatialAcc, ggstatsplot, reshape2, geosphere)
+```
+
+-   **tidyverse**: A collection of core packages for data cleaning, transformation, visualization, and analysis.
+
+-   **sf**: Manages, analyzes, and visualizes spatial data, specifically in the simple features (sf) format.
+
+-   **httr**: Facilitates HTTP requests, ideal for data retrieval and API interactions on the web.
+
+-   **jsonlite**: Parses and generates JSON data, making it easy to interact with APIs and handle JSON files.
+
+-   **rvest**: Simplifies web scraping and data extraction from websites.
+
+-   **readxl**: Reads data from Excel files, supporting both .xls and .xlsx formats.
+
+-   **spdep**: Provides tools for spatial dependence analysis and spatial autocorrelation, useful for spatial statistics.
+
+-   **tmap**: Creates static and interactive maps, suitable for geographic data visualization.
+
+-   **ClustGeo**: Performs clustering based on geographic and attribute data, ideal for geospatial clustering.
+
+-   **parallel**: Offers support for parallel computing, improving computational efficiency with large datasets.
+
+-   **ggpubr**: Helps create publication-ready plots with ggplot2, adding simple customization options.
+
+-   **cluster**: Performs clustering analyses, including K-means and hierarchical clustering.
+
+-   **factoextra**: Visualizes factor and cluster analyses, enhancing interpretability of results.
+
+-   **NbClust**: Provides multiple indices to determine the optimal number of clusters for a dataset.
+
+-   **ggplot2**: A grammar-based visualization system, ideal for creating a wide variety of data plots.
+
+-   **pheatmap**: Draws heatmaps with support for clustering and annotation.
+
+-   **heatmaply**: Creates interactive heatmaps, built on plotly, suitable for web applications.
+
+-   **corrplot**: Specializes in visualizing correlation matrices, displaying relationships between variables.
+
+-   **psych**: Offers tools for psychometrics, descriptive statistics, and multivariate analysis.
+
+-   **GGally**: Extends ggplot2, providing tools for easy data relationship visualization.
+
+-   **spacetime**: Analyzes and visualizes spatio-temporal data, useful for handling space and time datasets.
+
+-   **reader**: Conveniently reads various data formats, streamlining data import processes.
+
+-   **SpatialAcc**: Provides tools for measuring spatial accessibility, useful for evaluating access to facilities or services in spatial data.
+
+<!-- -->
+
+-   **ggstatsplot**: Enhances ggplot2 by adding statistical tests and visualizations, making it easier to perform and display statistical analyses within plots.
+
+-   **reshape2**: Enables data reshaping between wide and long formats, which is essential for data preparation and transforming datasets for analysis.
+
+## **5 Data import**
+
+### **5.1 Importing Geospatial data into R**
+
+```{r}
+adm0 <- st_read(dsn = "data",
+                        layer = "geoBoundariesCGAZ_ADM0")
+```
+
+```{r}
+adm1 <- st_read(dsn = "data",
+                        layer = "geoBoundariesCGAZ_ADM1")
+```
+
+```{r}
+adm2 <- st_read(dsn = "data",
+                        layer = "geoBoundariesCGAZ_ADM2")
+```
+
+```{r}
+adm0 <- st_as_sf(adm0, wkt = "geometry", crs = 4326)
+adm1 <- st_as_sf(adm1, wkt = "geometry", crs = 4326)
+adm2 <- st_as_sf(adm2, wkt = "geometry", crs = 4326)
+```
+
+```{r}
+uganda_adm0 <- adm0 %>%
+  filter(shapeGroup == "UGA")
+
+uganda_adm1 <- adm1 %>%
+  filter(shapeGroup == "UGA")
+
+uganda_adm2 <- adm2 %>%
+  filter(shapeGroup == "UGA")
+
+summarise(uganda_adm2)
+```
+
+```{r}
+write_csv(uganda_adm2,"data/uganda_adm2.csv")
+```
+
+### **5.2 Importing attribute data into R**
+
+```{r}
+FinScope <- read_excel("data/FinScope-2023_Dataset_Final.xlsx")
+```
+
+### **5.3 Visualizing Data**
+
+```{r}
+tmap_mode("view")  
+tm_shape(uganda_adm2) +
+  tm_borders(col = "Brown") + 
+  tm_layout(title = "Uganda ADM2 Level Boundaries")
+```
+
+```{r}
+FinScope_sf <- st_as_sf(FinScope, coords = c("hh_gps_longitude", "hh_gps_latitude"), crs = 4326)
+```
+
+```{r}
+tmap_mode("view")
+
+tm_shape(FinScope_sf) +
+  tm_dots(size = 0.1, col = "Pweight", palette = "RdYlBu", title = "Pweight") +
+  tm_layout(title = "FinScope Data Visualization")
+```
+
+These R code examples demonstrate how the **tmap** package can be used to visually inspect and validate spatial datasets. The first code block activates the "view" mode in **tmap**, generating an interactive map that showcases Uganda's ADM2 administrative boundaries (**uganda_adm2**) with blue outlines. This allows users to interactively examine and verify the precision of the boundary data.
+
+The second code block adds another layer to the map, displaying points from the **FinScope** dataset (**FinScope_sf**). Each point is styled with a size and color corresponding to the **Pweight** variable, using the "viridis" color scheme. This approach highlights the spatial variation and distribution of **Pweight**, offering a clear visual representation of the data.
+
+By combining these two visualizations, users can efficiently detect irregularities in spatial boundaries or attribute values, ensuring the dataset's integrity and consistency for further analysis.
+
+## **6 Data Preparation**
+
+### **6.1 Select the target column**
+
+```{r}
+target_columns <- c("HH_ID", "Interview_ID", "ea_name", "ea_code", "age", "disabled", 
+                    "District", "Region", "Subregion", "Rural_Urban", "Pweight", 
+                    "Lhhid", "Enum_code", "InterviewDate", "starttime", "endtime", 
+                    "namepid", "c1", "c2", "c3", "c4", "c5", "d1_11", "d1_12", 
+                    "d1_13", "d1_2","f3_1_6" ,"geometry")
+
+FinScope_selected <- FinScope_sf %>%
+  select(all_of(target_columns))
+
+print(head(FinScope_selected))
+```
+
+```{r}
+tmap_mode("view")
+
+tm_shape(FinScope_selected) +
+  tm_dots(size = 0.1, col = "Pweight", palette = "RdYlBu", title = "Pweight") +
+  tm_layout(title = "FinScope Data Visualization")
+```
+
+-   **HH_ID**: The household serial number taken from the listing form.
+
+-   **Interview_ID**: A unique identifier automatically generated for each interview.
+
+-   **ea_name**: The name of the enumeration area.
+
+-   **Enum_code**: The code assigned to the enumerator.
+
+-   **age**: The age of the respondent.
+
+-   **disabled**: Indicates if the respondent has any disability.
+
+-   **District**: The district in which the respondent resides.
+
+-   **Region**: The region within the country where the respondent lives.
+
+-   **Subregion**: A more specific subregion of the respondent’s location.
+
+-   **Rural_Urban**: Classification of the area as rural or urban.
+
+-   **Pweight**: The sampling weight applied to each respondent.
+
+-   **c1**: A question regarding the respondent’s age band.
+
+-   **c2**: The respondent’s gender, observed by the interviewer.
+
+-   **c3**: The respondent’s marital status.
+
+-   **c4**: The highest level of education completed by the respondent.
+
+-   **c5**: The current work situation of the respondent.
+
+-   **d1_11, d1_12, d1_13**: Questions about the top three priorities for spending or payments when receiving money, excluding food and clothing.
+
+-   **f3_1_6 (Mobile money)**: Represents whether the respondent uses mobile money, which is the dependent variable in this analysis, focusing on factors influencing mobile money usage.
+
+### **6.2 Data Merge**
+
+```{r}
+intersection_result <- st_intersection(FinScope_selected, uganda_adm2)
+
+print(intersection_result)
+```
+
+```{r}
+write_rds(intersection_result,"data/intersection_result.rds")
+```
+
+```{r}
+intersection_result <- readRDS("data/intersection_result.rds")
+```
+
+The code uses the st_intersection function from the sf package to calculate the spatial overlap between two datasets: FinScope_selected, which contains survey data points, and uganda_adm2, representing Uganda's administrative boundaries at the ADM2 level. The resulting dataset, intersection_result, integrates the attributes of both datasets wherever their geometries intersect. This process enhances the FinScope_selected dataset by appending administrative details from uganda_adm2, enabling a deeper spatial analysis by linking survey data to specific administrative regions.
+
+### **6.3 Data Cleaning**
+
+```{r}
+na_check_intersection <- sapply(intersection_result, function(x) sum(is.na(x)))
+na_check_intersection <- na_check_intersection[na_check_intersection > 0] 
+print("NA")
+
+print(na_check_intersection)
+```
+
+```{r}
+tmap_mode("view")
+
+tm_shape(intersection_result) +
+  tm_dots(size = 0.1, col = "Pweight", palette = "RdYlBu", title = "Pweight") +
+  tm_layout(title = "FinScope Data Visualization")
+```
+
+### 
+**7 Global Measures of Spatial Autocorrelation**
+
+**7.1 Calculate the adjacency matrix**
+
+```{r}
+coords <- st_coordinates(FinScope_selected)
+distance_threshold <- 50  
+nb <- dnearneigh(coords, 0, distance_threshold)
+listw <- nb2listw(nb, style = "W")
+```
+
+### **7.2 Calculating Moran’s I**
+
+```{r}
+moran_test <- moran.test(FinScope_selected$Pweight, listw)
+
+cat("Global Moran's I test result:\n")
+print(moran_test)
+```
+
+The code analyzes spatial autocorrelation for the Pweight variable in the FinScope_selected dataset using a Global Moran's I test. This test examines whether similar values cluster together geographically or are distributed randomly. It relies on moran.test along with listw, a matrix that defines spatial connections between regions. The output includes values like the test statistic and p-value, revealing the degree and significance of spatial clustering. The findings provide a deeper understanding of how Pweight is distributed across geographic areas, highlighting potential spatial patterns in the data.
+
+```{r}
+library(spdep)
+
+moran.plot(FinScope_selected$Pweight, listw, 
+           main="Moran's I Scatter Plot for Pweight",
+           xlab="Pweight", 
+           ylab="Spatial Lag of Pweight")
+
+abline(h = mean(FinScope_selected$Pweight), v = mean(spdep::lag.listw(listw, FinScope_selected$Pweight)), col = "red", lty = 2)
+```
+
+This Moran's I scatter plot visualizes the spatial relationship of Pweight and its spatial lag. The negative slope indicates a negative spatial autocorrelation, where high Pweight values are surrounded by low values and vice versa. Key outliers, such as points 2873 and 462, deviate from the general trend. The red dashed lines divide the plot into quadrants, highlighting different spatial clustering patterns.
+
+## **8 Analysis of mobile money**
+
+### **8.1 Geographic analysis of mobile money**
+
+```{r}
+od_data <- FinScope %>%
+  select(HH_ID, s1aq1b, s1aq2b) %>%  
+  filter(!is.na(s1aq1b) & !is.na(s1aq2b)) %>%
+  rename(
+    origin = s1aq1b,       
+    destination = s1aq2b   
+  )
+
+od_summary <- od_data %>%
+  count(origin, destination, name = "flow_count") %>%
+  arrange(desc(flow_count))
+
+print(od_summary)
+```
+
+This code analyzes the geographic flow of mobile money transactions, calculating the frequency of flows between origins (origin) and destinations (destination). It begins by selecting relevant columns (HH_ID, s1aq1b, and s1aq2b) from the FinScope dataset, where s1aq1b represents the origin and s1aq2b the destination. Missing values are filtered out to ensure completeness, and the columns are renamed to origin and destination for clarity. The code then counts the number of transactions for each unique origin-destination pair, storing the results in a column named flow_count, and sorts the pairs in descending order of transaction frequency. The output reveals key patterns, such as the most frequent flow from KAMPALA to KCCA with 150 occurrences, followed by other flows like MBALE to BUNGOKHO and OYAM to OYAM, each with 50 occurrences. This provides insights into major transaction routes and geographic patterns in mobile money usage.
+
+```{r}
+intersection_result_with_sum <- intersection_result %>%
+  group_by(shapeName) %>%
+  mutate(f3_1_6_total = sum(f3_1_6, na.rm = TRUE)) %>%
+  ungroup()
+
+head(intersection_result_with_sum)
+```
+
+```{r}
+intersection_result_with_sum <- st_as_sf(intersection_result_with_sum, coords = c("longitude", "latitude"), crs = 4326)
+
+multipolygon_data <- intersection_result_with_sum %>%
+  group_by(shapeName) %>%
+  summarize(
+
+    f3_1_6_total = first(f3_1_6_total),
+
+    avg_age = mean(age, na.rm = TRUE),
+    avg_d1_11 = mean(d1_11, na.rm = TRUE),
+    avg_d1_12 = mean(d1_12, na.rm = TRUE),
+    avg_d1_13 = mean(d1_13, na.rm = TRUE),
+    avg_c3 = mean(c3, na.rm = TRUE),
+    avg_c4 = mean(c4, na.rm = TRUE),
+    avg_c5 = mean(c5, na.rm = TRUE),
+
+    prop_c1_1 = sum(c1 == 1, na.rm = TRUE) / n(),
+    prop_c1_2 = sum(c1 == 2, na.rm = TRUE) / n(),
+    prop_c1_3 = sum(c1 == 3, na.rm = TRUE) / n(),
+    prop_c1_4 = sum(c1 == 4, na.rm = TRUE) / n(),
+    prop_c1_5 = sum(c1 == 5, na.rm = TRUE) / n(),
+    prop_c1_6 = sum(c1 == 6, na.rm = TRUE) / n(),
+    prop_c1_7 = sum(c1 == 7, na.rm = TRUE) / n(),
+
+    prop_c2_1 = sum(c2 == 1, na.rm = TRUE) / n(),
+    prop_c2_2 = sum(c2 == 2, na.rm = TRUE) / n(),
+
+    prop_rural = sum(Rural_Urban == "Rural", na.rm = TRUE) / n(),
+    prop_urban = sum(Rural_Urban == "Urban", na.rm = TRUE) / n(),
+
+    geometry = st_union(geometry) %>% st_combine() %>% st_convex_hull()
+  ) %>%
+  ungroup() %>%
+  st_cast("MULTIPOLYGON")
+
+print(multipolygon_data)
+```
+
+This script examines transaction flows within the FinScope dataset, focusing on connections between locations. It starts by isolating the columns HH_ID, s1aq1b, and s1aq2b, representing transaction origins and destinations. Rows with missing values in these fields are excluded to ensure data quality. The origin and destination fields are then renamed for clarity. The code computes the frequency of each unique origin-destination pair and stores these counts in a new column called flow_count. Finally, the results are arranged in descending order to prioritize the most frequent flows. The resulting od_summary table provides a detailed view of transactional patterns, emphasizing the most significant location connections.
+
+```{r}
+uganda_adm2 <- st_transform(uganda_adm2, crs = st_crs(multipolygon_data))
+
+merged_data <- uganda_adm2 %>%
+  left_join(multipolygon_data %>% st_set_geometry(NULL) %>% select(shapeName, f3_1_6_total), by = "shapeName")
+ggplot() +
+  geom_sf(data = merged_data, aes(fill = f3_1_6_total), color = "white", size = 0.2) +
+  scale_fill_gradient(
+    low = "skyblue",   # Start color (low values)
+    high = "forestgreen",  # End color (high values)
+    na.value = "grey90"  # Color for missing values
+  ) +
+  labs(title = "Map of f3_1_6_total by Province with Uganda ADM2 Boundaries") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "right",
+    panel.grid.major = element_line(color = "transparent")
+  )
+```
+
+```{r}
+region_summary <- intersection_result %>%
+  group_by(shapeName) %>%
+  summarise(total_mobile_money = sum(f3_1_6, na.rm = TRUE))
+
+geo_data <- uganda_adm2
+
+geo_data <- geo_data %>%
+  left_join(as.data.frame(region_summary), by = "shapeName")
+
+tmap_mode("view")
+tm_shape(geo_data) +
+  tm_polygons("total_mobile_money", 
+              style = "quantile", 
+              title = "Total Mobile Money",
+              palette = "-RdYlGn") +  # Red-Yellow-Green gradient
+  tm_layout(main.title = "Mobile Money Transactions by District")
+```
+
+These two blocks of code generate visualizations to analyze mobile money transaction patterns across Uganda's districts. The first block groups transaction data by district (shapeName) and calculates the total volume of mobile money transactions (total_mobile_money) for each district using intersection_result. This summarized data is then joined with spatial boundary data from uganda_adm2 to create a geospatial dataset (geo_data).
+
+In the second block, the tmap package is used to create an interactive choropleth map, where districts are shaded according to the total volume of mobile money transactions. The color palette was customized, with the first version using a blue gradient (Blues) to represent values from low to high, and the updated version utilizing a reversed red-yellow-green gradient (-RdYlGn) for better visual contrast. The map's title, "Mobile Money Transactions by District," provides context, while the quantile classification style ensures a balanced distribution of color across districts. These maps effectively highlight the spatial variation in mobile money activity, emphasizing regions with higher or lower transaction volumes, and providing insights into geographic trends in financial inclusion.
+
+### **8.2 Analyzing the impact of gender on mobile money**
+
+```{r}
+data <- multipolygon_data
+
+data_sf <- st_as_sf(data, wkt = "geometry", crs = 4326)  
+data_sf <- data_sf %>% select(shapeName, geometry)
+
+distance_matrix <- st_distance(data_sf)
+
+distance_matrix_df <- as.data.frame(distance_matrix)
+rownames(distance_matrix_df) <- data_sf$shapeName
+colnames(distance_matrix_df) <- data_sf$shapeName
+
+print(distance_matrix_df)
+```
+
+```{r}
+data_long <- melt(data, id.vars = "shapeName", measure.vars = c("prop_c2_1", "prop_c2_2"),
+                  variable.name = "Gender", value.name = "Proportion")
+
+data_long$Gender <- factor(data_long$Gender, levels = c("prop_c2_1", "prop_c2_2"),
+                           labels = c("Male", "Female"))
+
+ggplot(data_long, aes(x = shapeName, y = Proportion, fill = Gender)) +
+  geom_bar(stat = "identity", position = "fill") +
+  scale_fill_manual(values = c("steelblue", "coral")) +  # Updated colors for Male and Female
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Gender Proportion by Shape", x = "Shape", y = "Proportion") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+```
+
+```{r}
+uganda_adm2_data <- st_set_geometry(uganda_adm2, NULL)
+
+uganda_adm2_data <- uganda_adm2_data %>%
+  mutate(shapeName = tolower(trimws(shapeName)))
+
+data <- data %>%
+  mutate(shapeName = tolower(trimws(shapeName)))
+
+data_merged <- left_join(uganda_adm2_data, data, by = "shapeName")
+
+data_sf <- st_as_sf(data_merged, geometry = st_geometry(uganda_adm2))
+
+print(head(data_sf))
+```
+
+```{r}
+data_sf <- data_sf %>%
+  mutate(
+    Male_Effect = f3_1_6_total * prop_c2_1,
+    Female_Effect = f3_1_6_total * prop_c2_2
+  )
+print(head(data_sf[, c("shapeName", "Male_Effect", "Female_Effect")]))
+```
+
+```{r}
+tmap_mode("view")
+
+male_effect_map <- tm_shape(data_sf) +
+  tm_polygons("Male_Effect", 
+              palette = "Purples",  # Changed from "Blues" to "Purples"
+              title = "Male Effect on f3_1_6_total",
+              style = "quantile", 
+              n = 5) +
+  tm_layout(main.title = "Male Effect on f3_1_6_total", legend.outside = TRUE)
+
+female_effect_map <- tm_shape(data_sf) +
+  tm_polygons("Female_Effect", 
+              palette = "Oranges",  # Changed from "Reds" to "Oranges"
+              title = "Female Effect on f3_1_6_total",
+              style = "quantile", 
+              n = 5) +
+  tm_layout(main.title = "Female Effect on f3_1_6_total", legend.outside = TRUE)
+
+tmap_arrange(male_effect_map, female_effect_map)
+```
+
+The provided code and visualizations analyze gender-based patterns in mobile money transactions and their spatial distribution. The first code block creates a bar plot showing the proportion of male and female contributions across different regions (shapeName). The data is reshaped to a long format, and each gender's proportion is displayed using a stacked bar chart, with the x-axis representing regions and the y-axis showing proportions as percentages. The plot highlights the relative contributions of males and females in each region, using distinct colors for clarity。
+
+The second block generates two interactive choropleth maps to compare the spatial effects of male and female contributions to f3_1_6_total (a mobile money-related metric) across Uganda's districts. The male effect map uses a blue color gradient (Purples), while the female effect map employs an orange-red gradient (Oranges). Both maps classify values into five quantiles to ensure balanced visualization of data across districts. The maps, displayed side by side, provide insights into regional variations, highlighting areas with higher male or female influence in mobile money transactions.
+
+Together, these visualizations offer a comprehensive view of gender-related patterns in mobile money activity, showing both proportional differences and spatial distributions. The bar chart emphasizes relative contributions across regions, while the maps focus on absolute impacts within districts, enabling deeper insights into gendered trends.
+
+**8.3 Analyze the impact of funding sources on mobile money**
+
+```{r}
+data_long <- melt(data, id.vars = "shapeName", measure.vars = c("prop_c1_1", "prop_c1_2", "prop_c1_3","prop_c1_4", "prop_c1_5", "prop_c1_6", "prop_c1_7"),
+variable.name = "FundingSource", value.name = "Proportion")
+
+data_long$FundingSource <- factor(data_long$FundingSource,levels = c("prop_c1_1", "prop_c1_2", "prop_c1_3", "prop_c1_4","prop_c1_5", "prop_c1_6", "prop_c1_7"),
+                          labels = c("Source 1", "Source 2", "Source 3", "Source 4", "Source 5", "Source 6", "Source 7"))
+
+ggplot(data_long, aes(x = shapeName, y = Proportion, fill = FundingSource)) +
+  geom_bar(stat = "identity", position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = c(
+    "steelblue", "coral", "gold", "darkgreen", "orchid", "tomato", "cyan"
+  )) +  # Custom colors for each funding source
+  labs(title = "Funding Source Proportion by Shape", x = "Shape", y = "Proportion") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+```
+
+```{r}
+tmap_mode("view")
+
+tm_shape(data_sf) +
+  tm_polygons("prop_c1_1", 
+              palette = "YlGnBu",  
+              title = "Source 1 Proportion") +
+  tm_layout(main.title = "Funding Source 1 Proportion by Shape")
+```
+
+```{r}
+tm_shape(data_sf) +
+  tm_polygons("prop_c1_2", 
+              palette = "Oranges", 
+              title = "Source 2 Proportion") +
+  tm_layout(main.title = "Funding Source 2 Proportion by Shape")
+```
+
+```{r}
+tm_shape(data_sf) +
+  tm_polygons("prop_c1_3", 
+              palette = "PuBuGn", 
+              title = "Source 3 Proportion") +
+  tm_layout(main.title = "Funding Source 3 Proportion by Shape")
+```
+
+```{r}
+tm_shape(data_sf) +
+  tm_polygons("prop_c1_4", palette = "Purples", title = "Source 4 Proportion") +
+  tm_layout(main.title = "Funding Source 4 Proportion by Shape")
+```
+
+```{r}
+tm_shape(data_sf) +
+  tm_polygons("prop_c1_5", 
+              palette = "BuPu", 
+              title = "Source 5 Proportion") +
+  tm_layout(main.title = "Funding Source 5 Proportion by Shape")
+
+```
+
+```{r}
+tm_shape(data_sf) +
+  tm_polygons("prop_c1_6", palette = "YlGnBu", title = "Source 6 Proportion") +
+  tm_layout(main.title = "Funding Source 6 Proportion by Shape")
+```
+
+```{r}
+tm_shape(data_sf) +
+  tm_polygons("prop_c1_7", 
+              palette = "RdPu",  
+              title = "Source 7 Proportion") +
+  tm_layout(main.title = "Funding Source 7 Proportion by Shape")
+```
+
+These visualizations provide insights into the geographical distribution of funding sources driving mobile money usage. The bar chart compares the proportional contributions of seven funding sources across regions, emphasizing the diversity of financial inputs within each area. The maps, on the other hand, offer a spatial perspective by focusing on individual funding sources, where darker shades signify regions with stronger reliance. Together, these visualizations highlight how the availability and prominence of certain funding sources vary across locations, potentially influencing regional mobile money adoption and usage dynamics.
+
+## **9 Apsaital Data Handling**
+
+### **9.1 Extraction distance**
+
+```{r}
+data_aps <- intersection_result %>%
+  mutate(
+    lon = as.numeric(str_extract(geometry, "(?<=c\\()[^,]+")),
+    lat = as.numeric(str_extract(geometry, "(?<=, )[\\d.]+"))
+  )
+```
+
+### **9.2 Tidying distance matrix**
+
+```{r}
+data_aps_sf <- st_as_sf(data_aps, coords = c("lon", "lat"), crs = 4326)
+
+summary(data_aps_sf)
+```
+
+### **10 Modelling and Visualising Accessibility using Hansen Method**
+**10.1 Computing Hansen’s accessibility**
+
+```{r}
+if (!inherits(intersection_result, "sf")) {
+  stop("sf")
+}
+
+data_han <- intersection_result %>%
+  mutate(
+    lon = st_coordinates(.)[,1],
+    lat = st_coordinates(.)[,2]
+  )
+
+print(head(data_han$lon))
+```
+
+```{r}
+print(head(data_han$lat))
+```
+
+```{r}
+data_han_sf <- st_as_sf(data_han, coords = c("lon", "lat"), crs = 4326)
+
+data_han_sf <- st_transform(data_han_sf, crs = 32633)
+
+distance_matrix <- as.numeric(st_distance(data_han_sf))
+
+distance_matrix <- matrix(distance_matrix, nrow = nrow(data_han_sf), ncol = nrow(data_han_sf))
+
+decay_function <- function(distance, beta = 0.1) {
+  exp(-beta * distance)
+}
+
+data_han_sf$accessibility <- rowSums(decay_function(distance_matrix))
+
+print(head(data_han_sf$accessibility))
+```
+
+```{r}
+print("Point Data Bounding Box:")
+print(st_bbox(data_han_sf))
+```
+
+```{r}
+square_grid <- st_make_grid(data_han_sf, cellsize = 10000, what = "polygons", square = TRUE, 
+                            offset = st_bbox(data_han_sf)[c("xmin", "ymin")],
+                            crs = st_crs(data_han_sf))
+square_grid_sf <- st_sf(geometry = square_grid)
+
+data_with_square_grid <- st_join(data_han_sf, square_grid_sf, join = st_within)
+
+square_grid_accessibility <- data_with_square_grid %>%
+  group_by(geometry) %>%
+  summarise(accHansen = mean(accessibility, na.rm = TRUE))
+
+square_grid_sf <- st_join(square_grid_sf, square_grid_accessibility, left = TRUE)
+square_grid_sf$accHansen[is.na(square_grid_sf$accHansen)] <- NA
+
+print("Summary of Accessibility (accHansen) using square grid:")
+print(summary(square_grid_sf$accHansen))
+```
+
+```{r}
+Uganda_adm2 <- st_transform(uganda_adm2, crs = st_crs(data_han_sf))
+
+square_grid <- st_make_grid(Uganda_adm2, cellsize = 6000, what = "polygons", square = TRUE,
+                            crs = st_crs(Uganda_adm2))
+square_grid_sf <- st_sf(geometry = square_grid)
+
+square_grid_clipped <- st_intersection(square_grid_sf, Uganda_adm2)
+
+data_with_clipped_square_grid <- st_join(data_han_sf, square_grid_clipped, join = st_within)
+
+clipped_square_grid_accessibility <- data_with_clipped_square_grid %>%
+  group_by(geometry) %>%
+  summarise(accHansen = mean(accessibility, na.rm = TRUE))
+
+square_grid_clipped <- st_join(square_grid_clipped, clipped_square_grid_accessibility, left = TRUE)
+square_grid_clipped$accHansen[is.na(square_grid_clipped$accHansen)] <- NA
+
+print("Summary of Accessibility (accHansen) within Uganda boundaries:")
+print(summary(square_grid_clipped$accHansen))
+```
+
+This code computes and visualizes Hansen's accessibility index, a measure of access to resources or services, across a spatial grid within Uganda. The first section checks the validity of spatial data (intersection_result) and extracts longitude and latitude coordinates to create a spatial points dataset (data_han_sf). A distance matrix is computed between all points, and a decay function models accessibility, decreasing with distance.
+
+The accessibility index for each point is calculated as the row-wise sum of decayed values in the distance matrix, providing an aggregated measure of access. The data is then visualized on a grid, with accessibility values summarized and interpolated over square grid cells. In the first grid visualization, a 10,000-meter grid resolution is used, providing an initial summary of accessibility.
+
+The final part of the code refines the analysis by clipping the grid to Uganda's administrative boundaries (uganda_adm2) and recalculating accessibility for each cell. The summary statistics (min, max, mean, and quartiles) indicate variability in accessibility across regions, with higher values representing greater access within certain areas. This workflow highlights regional disparities in accessibility and facilitates spatial analysis for policy or planning purposes.
+
+The results highlight significant spatial disparities in accessibility across Uganda. Regions with higher Hansen accessibility values, as indicated by the maximum value (7.526), are likely urban centers or resource-dense areas where services and resources are easily reachable. In contrast, areas with low accessibility values reflect remote or underserved regions with limited access to nearby resources. The clipped grid, aligned with Uganda's boundaries, provides a more accurate representation of accessibility patterns, emphasizing the variability in service distribution and highlighting areas where targeted interventions may be required to improve access. These insights are valuable for regional planning and policy-making to address inequalities in resource accessibility.
+
+### **10.2 Visualising Hansen’s accessibility**
+
+```{r}
+tmap_mode("plot")
+
+tm_shape(square_grid_clipped) +
+  tm_fill(
+    "accHansen", 
+    title = "Accessibility", 
+    palette = "YlGnBu", 
+    style = "quantile", 
+    n = 5, 
+    colorNA = "#d9d9d9" 
+  ) +
+  tm_borders(alpha = 0.7, col = "black") + 
+  tm_layout(
+    title = "Hansen Accessibility within Uganda",
+    title.position = c("center", "top"),
+    frame = FALSE  # Removes the frame for a cleaner look
+  ) +
+  tm_scale_bar(position = c("left", "bottom"), text.size = 0.7) +  
+  tm_compass(type = "4star", position = c("left", "top"))  
+
+```
+
+This map visualizes Hansen's Accessibility Index within Uganda, where accessibility values are represented using a yellow-to-green-to-blue gradient (YlGnBu palette). The accessibility index measures ease of access to resources or services, with higher values (darker blue) indicating better accessibility. Missing data regions are shaded in light gray. A 4-star compass at the top left provides orientation, and a scale bar at the bottom left indicates distances in kilometers. The legend, resized to fit wide labels, displays the accessibility ranges in quantile classification, ensuring balanced representation of values. The grid overlay highlights the spatial resolution used for the analysis, showcasing variations in accessibility across different parts of Uganda. This visualization effectively identifies regional disparities in accessibility.
+
+The map highlights significant spatial disparities in accessibility across Uganda, as measured by Hansen's Accessibility Index. Regions with higher accessibility values, shown in darker blue, likely correspond to urban centers or areas with a dense concentration of resources and services. In contrast, regions with lower values (yellow and light green) may represent more remote or underserved areas, where access to resources is limited.
+
+The grid structure provides a clear spatial resolution for the analysis, making it easy to identify patterns of accessibility. Missing data, shaded in gray, suggests gaps in data coverage or regions where accessibility could not be calculated. The quantile classification ensures that the values are distributed evenly across the five color categories, allowing for meaningful comparisons between regions.
+
+```{r}
+square_grid_clipped <- square_grid_clipped[!is.na(square_grid_clipped$accHansen), ]
+```
+
+```{r}
+data_for_plot <- square_grid_clipped %>%
+  filter(!is.na(accHansen)) %>%
+  mutate(log_accHansen = log(accHansen))
+
+ggplot(data_for_plot, aes(x = shapeName, y = log_accHansen)) +
+  geom_boxplot(outlier.shape = NA, fill = "lightblue", color = "darkblue") + 
+  geom_jitter(color = "darkgray", size = 0.6, alpha = 0.6) + 
+  stat_summary(fun = "mean", geom = "point", color = "orange", size = 3) +  
+  labs(
+    title = "Log of Accessibility by Region", 
+    x = "Region", 
+    y = "log(accHansen)"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(color = "darkblue", size = 16, hjust = 0.5) 
+  )
+```
+
+The visualization reveals substantial disparities in accessibility across regions in Uganda, as measured by the logarithm of Hansen's accessibility index. Regions with narrow boxplots and tightly clustered jittered points tend to have uniformly low accessibility, indicating limited availability of resources and services. These areas might correspond to remote or rural regions with underdeveloped infrastructure, where accessibility challenges are widespread and consistent.
+
+In contrast, regions with taller boxplots or higher mean values, represented by orange dots, reflect greater variability or overall better access to resources. These areas are likely urban centers or regions closer to key services, where some parts have excellent accessibility, while others still face challenges. The broader spread of points in these regions suggests potential inequalities, with some areas benefiting disproportionately from better infrastructure or services compared to others within the same region.
+
+The scattered jittered points provide a granular view of the individual data points within each region, highlighting pockets of particularly high or low accessibility. Regions with a broader distribution of points underscore the importance of addressing intra-regional disparities, as even regions with relatively high mean accessibility may have areas that lag significantly.
+
+Overall, the findings emphasize the need for a targeted and region-specific approach to resource allocation and infrastructure planning. Low-accessibility regions require interventions to enhance baseline accessibility, while regions with high variability could benefit from efforts to reduce inequalities and ensure equitable distribution of resources and services. This analysis serves as a critical tool for policymakers to prioritize areas in need and design tailored strategies for improving accessibility across Uganda.
+
+## **11 Modelling and Visualising Accessibility using KD2SFCA Method**
+
+## **11.1 Computing KD2SFCA’s accessibility**
+
+```{r}
+data_KD2SFCA <- intersection_result
+
+data_KD2SFCA <- data_KD2SFCA %>% 
+  mutate(
+    longitude = as.numeric(str_extract(geometry, "(?<=\\()[^,]+")),
+    latitude = as.numeric(str_extract(geometry, "(?<=, )[\\d.]+"))
+  )
+
+head(data_KD2SFCA[, c("geometry", "longitude", "latitude")])
+```
+
+```{r}
+sum(is.na(data_KD2SFCA$longitude))
+
+sum(is.na(data_KD2SFCA$latitude))
+```
+
+```{r}
+data_KD2SFCA <- data_KD2SFCA %>% filter(!is.na(longitude) & !is.na(latitude))
+
+sum(is.na(data_KD2SFCA$longitude))
+```
+
+```{r}
+sum(is.na(data_KD2SFCA$latitude))
+```
+
+```{r}
+regions <- unique(data_KD2SFCA$shapeName)
+
+demand_points <- data.frame()
+service_points <- data.frame()
+
+for (region in regions) {
+  region_data <- data_KD2SFCA %>% filter(shapeName == region)
+
+  n_service <- max(1, round(0.2 * nrow(region_data)))
+  service_sample <- region_data %>% sample_n(n_service)
+  demand_sample <- setdiff(region_data, service_sample)
+
+  demand_points <- rbind(demand_points, demand_sample)
+  service_points <- rbind(service_points, service_sample)
+}
+
+head(demand_points)
+```
+
+```{r}
+head(service_points)
+```
+
+```{r}
+decay_function <- function(distance, bandwidth = 5000) {
+  exp(-(distance^2) / (2 * bandwidth^2))
+}
+```
+
+```{r}
+demand_points$longitude <- as.numeric(gsub("POINT\\s*\\(|\\)", "", demand_points$longitude))
+demand_points$latitude <- as.numeric(gsub("POINT\\s*\\(|\\)", "", demand_points$latitude))
+service_points$longitude <- as.numeric(gsub("POINT\\s*\\(|\\)", "", service_points$longitude))
+service_points$latitude <- as.numeric(gsub("POINT\\s*\\(|\\)", "", service_points$latitude))
+
+str(demand_points)
+```
+
+```{r}
+str(service_points)
+```
+
+```{r}
+decay_function <- function(distance, bandwidth = 5000) {
+  exp(-(distance^2) / (2 * bandwidth^2))
+}
+
+for (i in 1:nrow(service_points)) {
+
+  service_location <- c(service_points$longitude[i], service_points$latitude[i])  
+  region_demand <- demand_points %>% filter(shapeName == service_points$shapeName[i])
+
+  if (nrow(region_demand) > 0) {
+
+    demand_coords <- cbind(as.numeric(region_demand$longitude), as.numeric(region_demand$latitude))
+
+    print(demand_coords)  
+
+    distances <- distGeo(service_location, demand_coords)
+
+    weights <- decay_function(distances)
+
+    service_points$accessibility[i] <- sum(weights)
+  } else {
+
+    service_points$accessibility[i] <- 0
+  }
+}
+```
+
+```{r}
+head(service_points[, c("shapeName", "latitude", "longitude", "accessibility")])
+```
+
+```{r}
+decay_function <- function(distance, bandwidth = 5000) {
+  exp(-(distance^2) / (2 * bandwidth^2))
+}
+
+service_points$accessibility <- 0
+
+for (i in 1:nrow(service_points)) {
+
+  service_location <- c(service_points$longitude[i], service_points$latitude[i])  
+
+  region_demand <- demand_points %>% filter(shapeName == service_points$shapeName[i])
+
+  if (nrow(region_demand) > 0) {
+
+    demand_coords <- cbind(as.numeric(region_demand$longitude), as.numeric(region_demand$latitude))
+
+    distances <- distGeo(service_location, demand_coords)
+
+    weights <- decay_function(distances)
+
+    service_points$accessibility[i] <- sum(weights)
+  } else {
+
+    service_points$accessibility[i] <- 0
+  }
+}
+
+head(service_points[, c("shapeName", "latitude", "longitude", "accessibility")])
+```
+
+```{r}
+decay_function <- function(distance, bandwidth = 5000) {
+  exp(-(distance^2) / (2 * bandwidth^2))
+}
+
+data_KD2SFCA$accessibility <- 0
+```
+
+```{r}
+decay_function <- function(distance, bandwidth = 5000) {
+  exp(-(distance^2) / (2 * bandwidth^2))
+}
+
+service_points$KD2SFCA_accessibility <- 0
+
+for (i in 1:nrow(service_points)) {
+
+  service_location <- c(service_points$longitude[i], service_points$latitude[i])  # 
+  region_demand <- demand_points %>% filter(shapeName == service_points$shapeName[i])
+
+  if (nrow(region_demand) > 0) {
+
+    demand_coords <- cbind(as.numeric(region_demand$longitude), as.numeric(region_demand$latitude))
+
+    distances <- distGeo(service_location, demand_coords)
+
+    weights <- decay_function(distances)
+
+    service_points$KD2SFCA_accessibility[i] <- sum(weights)
+  } else {
+
+    service_points$KD2SFCA_accessibility[i] <- 0
+  }
+}
+
+
+head(service_points[, c("shapeName", "latitude", "longitude", "KD2SFCA_accessibility")])
+```
+
+This code computes the KD2SFCA (Kernel Density 2-Step Floating Catchment Area) accessibility score for each service point in the service_points dataset by evaluating the demand within its vicinity. A Gaussian decay function is applied to model how accessibility diminishes with increasing distance, using a bandwidth of 5000 meters to define the extent of influence. For each service point, the code filters the demand_points dataset to include only those within the same region (shapeName). If demand points are present, it calculates the distances between the service point and demand locations, applies the decay function to these distances, and aggregates the weighted values to determine the accessibility score. This score, stored in the KD2SFCA_accessibility column, reflects the influence of each service point relative to the nearby demand. In cases where no demand points are found within the region, the accessibility score is assigned a value of zero. The final output includes columns for shapeName, latitude, longitude, and the computed accessibility score, offering a regional perspective on service accessibility and the spatial relationship between service points and demand.
+
+### **11.2 Visualising KD2SFCA’s accessibility**
+
+```{r}
+hex_grid <- st_make_grid(service_points, cellsize = 0.1, what = "polygons", square = FALSE)
+
+hex_grid_sf <- st_sf(geometry = hex_grid)
+
+data_with_hex <- st_join(service_points, hex_grid_sf, join = st_within)
+
+hex_accessibility <- data_with_hex %>%
+  group_by(geometry) %>%
+  summarise(KD2SFCA_accessibility = mean(KD2SFCA_accessibility, na.rm = TRUE))
+
+hex_grid_sf <- st_join(hex_grid_sf, hex_accessibility, left = TRUE)
+hex_grid_sf$KD2SFCA_accessibility[is.na(hex_grid_sf$KD2SFCA_accessibility)] <- 0  
+```
+
+```{r}
+hex_grid <- st_make_grid(service_points, cellsize = 0.1, what = "polygons", square = FALSE)
+hex_grid_sf <- st_sf(geometry = hex_grid)
+
+hex_grid_clipped <- st_intersection(hex_grid_sf, uganda_adm2)
+
+data_with_hex <- st_join(service_points, hex_grid_clipped, join = st_within)
+
+hex_accessibility <- data_with_hex %>%
+  group_by(geometry) %>%
+  summarise(KD2SFCA_accessibility = mean(KD2SFCA_accessibility, na.rm = TRUE))
+
+hex_grid_clipped <- st_join(hex_grid_clipped, hex_accessibility, left = TRUE)
+hex_grid_clipped$KD2SFCA_accessibility[is.na(hex_grid_clipped$KD2SFCA_accessibility)] <- 0  
+```
+
+```{r}
+summary(hex_grid_clipped$KD2SFCA_accessibility)
+```
+
+```{r}
+tmap_mode("view")
+
+tm_shape(hex_grid_clipped) +
+  tm_fill("KD2SFCA_accessibility", 
+          title = "Accessibility (KD2SFCA)", 
+          palette = "Blues",  
+          breaks = c(0, 1, 5, 10, 20, 70), 
+          alpha = 0.9) +       
+  tm_borders(col = "black", lwd = 0.7) +  
+  tm_layout(
+    title = "KD2SFCA Method within Uganda", 
+    title.position = c("center", "top"),
+    legend.position = c("right", "bottom"),
+    frame = TRUE 
+  ) +
+  tm_scale_bar(position = c("left", "bottom"), text.size = 0.8) + 
+  tm_compass(type = "8star", position = c("left", "top")) 
+
+```
+
+The code calculates and visualizes accessibility across Uganda using the KD2SFCA (Kernel Density 2-Step Floating Catchment Area) method. It begins by creating a hexagonal grid with a cell size of 0.1, dividing Uganda into uniform spatial units for analysis. Each hexagonal cell represents an area where accessibility to services is evaluated. The code associates service points with their respective grid cells using a spatial join (st_within), ensuring that each service point contributes to the accessibility score of the cell it falls within. To confine the analysis to Uganda, the hexagonal grid is clipped to the country’s administrative boundaries, excluding areas outside Uganda. Accessibility scores are computed for each cell by averaging the KD2SFCA_accessibility values of all service points within that cell. For cells where no service points are present, the accessibility score is set to 0. The output includes these accessibility scores for all hexagonal cells, providing a granular perspective on service accessibility.
+
+The results indicate a significant disparity in accessibility across the country. Summary statistics reveal that the minimum accessibility score is 0, with many cells having no access to services. The median accessibility score is also 0, highlighting that a large portion of the country experiences limited or no accessibility. The maximum score of 67.313suggests that a few regions, likely urban centers or areas with dense service coverage, enjoy much higher accessibility. The mean accessibility score of 1.827 further reflects the overall concentration of accessibility in specific areas, with the majority of regions having very low scores.
+
+The map visualization effectively conveys these patterns using a blue gradient color palette (Blues). Lighter blue shades represent areas with little to no accessibility, while darker blue shades highlight regions with higher accessibility. The hexagonal grid provides a consistent spatial resolution, making it easier to interpret accessibility variations across Uganda. The map shows that higher accessibility values are localized in specific clusters, likely corresponding to urban areas or resource hubs, whereas rural or remote regions are dominated by low-accessibility cells. This uneven distribution underscores the need for strategic resource allocation to bridge accessibility gaps, especially in underserved areas. Overall, the KD2SFCA method and visualization provide a comprehensive view of spatial accessibility, revealing critical insights into where interventions are needed to improve service reach and equity across Uganda.
+
+## 
+**12 Modelling and Visualising Accessibility using Spatial Accessibility Measure (SAM) Method**
+
+### **12.1 Computing SAM accessibility**
+
+```{r}
+decay_function <- function(distance, bandwidth = 5000) {
+  exp(-(distance^2) / (2 * bandwidth^2))
+}
+
+service_points$accessibility_sam <- 0
+
+for (i in 1:nrow(service_points)) {
+
+  service_location <- c(service_points$longitude[i], service_points$latitude[i])
+
+  region_demand <- demand_points %>% filter(shapeName == service_points$shapeName[i])
+
+  if (nrow(region_demand) > 0) {
+
+    demand_coords <- cbind(as.numeric(region_demand$longitude), as.numeric(region_demand$latitude))
+
+    distances <- distGeo(service_location, demand_coords)
+    
+
+    weights <- decay_function(distances)
+    
+
+    service_points$accessibility_sam[i] <- sum(weights)
+  } else {
+    service_points$accessibility_sam[i] <- 0
+  }
+}
+
+
+head(service_points[, c("shapeName", "latitude", "longitude", "accessibility_sam")])
+```
+
+The code calculates a Spatial Accessibility Measure (SAM) for service points using a Gaussian decay function to model how accessibility diminishes with distance, with a bandwidth of 5000 meters. For each service point, it identifies demand points within the same region (shapeName) and calculates the distances between them. These distances are weighted using the decay function, and the weighted values are summed to determine the accessibility score (accessibility_sam). Regions like "Chua" show higher scores (e.g., 11.97), indicating better access due to denser or closer demand points, while regions like "Dodoth" exhibit lower scores (e.g., 5.99), suggesting limited access. This method highlights regional disparities in accessibility, providing valuable insights for improving resource allocation and addressing inequities in service provision.
+
+### **12.2 Visualising SAM’s accessibility**
+
+```{r}
+hex_grid <- st_make_grid(service_points, cellsize = 10000, what = "polygons", square = FALSE)
+hex_grid_sf <- st_sf(geometry = hex_grid)
+
+service_points_sf <- st_as_sf(service_points, coords = c("longitude", "latitude"), crs = 4326)
+
+data_with_hex <- st_join(service_points_sf, hex_grid_sf, join = st_within)
+
+hex_accessibility_sam <- data_with_hex %>%
+  group_by(geometry) %>%
+  summarise(accSAM = mean(accessibility_sam, na.rm = TRUE))
+
+hex_grid_sf <- st_join(hex_grid_sf, hex_accessibility_sam, left = TRUE)
+hex_grid_sf$accSAM[is.na(hex_grid_sf$accSAM)] <- NA
+```
+
+```{r}
+hex_grid_clipped <- st_intersection(hex_grid_sf, uganda_adm2)
+```
+
+```{r}
+break_values <- c(0, 2, 4, 6, 8, 10, 12, 15, 20, 25, 30, 70)  
+
+tmap_mode("plot")
+
+tm_shape(hex_grid_clipped) +
+  tm_fill("accSAM", 
+          palette = "Blues",  
+          title = "Accessibility (SAM)",
+          breaks = break_values) +  
+  tm_borders(col = "grey50") +  
+  tm_shape(uganda_adm2) +
+  tm_borders(lwd = 2, col = "darkblue") +  
+  tm_layout(title = "SAM Method within Uganda",
+            title.position = c("center", "top"), 
+            legend.position = c("left", "top"),  
+            legend.text.size = 0.7,  
+            legend.title.size = 0.9,
+            frame = TRUE)  
+```
+
+The code calculates and visualizes Spatial Accessibility Measure (SAM) for Uganda using a hexagonal grid. Service points are joined to hexagonal cells, and the accessibility score (accSAM) for each cell is computed by averaging the accessibility_sam values of service points within it. Cells without service points are assigned NA. The hexagonal grid is clipped to Uganda’s boundaries, ensuring the analysis focuses on the country’s area.
+
+The resulting map uses a yellow-to-red gradient to depict SAM scores, where lighter shades indicate low accessibility and darker shades represent higher accessibility. The map reveals significant disparities, with higher scores clustered in specific regions, likely due to higher service density, while most areas show lower accessibility, highlighting gaps in service reach. This analysis offers clear insights into regions requiring improved infrastructure or resource allocation to enhance equity.
+
+**13 Conclusion**
+Based on the comprehensive analysis of accessibility across Uganda using the KD2SFCA and SAM methods, we observe significant disparities in access to services across regions. High-accessibility areas, particularly in central and southern Uganda, are characterized by dense networks of service points and proximity to demand clusters, which contribute to better access. Conversely, northern and remote regions show consistently low accessibility scores, reflecting inadequate service coverage and greater distances from service points. These findings underscore a pressing need for infrastructure development and strategic allocation of resources in underserved areas to address these inequities.
+
+To further understand the spatial patterns and drivers of accessibility disparities, advanced spatial modeling, such as Geographically Weighted Regression (GWR), could be employed. This approach would allow us to examine how factors such as service density, population distribution, and regional socio-economic characteristics influence accessibility on a localized scale. For instance, proximity to service points may have a stronger influence in rural areas, while population density and infrastructure quality may play a larger role in urban regions. By incorporating these region-specific insights, policymakers can design targeted interventions, such as establishing additional service points in underserved areas or improving transportation networks to reduce access barriers. This spatially detailed analysis provides a robust foundation for improving service equity and enhancing access to essential resources across Uganda.
+
+
+
