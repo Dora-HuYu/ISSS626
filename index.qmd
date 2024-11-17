@@ -33,9 +33,9 @@ listing:
       - title
       - author
 
-  - id: Take-home_Exercise
+  - id: Take-home Exercise
     contents: 
-      - "Take-home_Ex/*/*.qmd"
+      - "Take-home Exercise /*/*.qmd"
     sort:
       - "title"
     type: grid
