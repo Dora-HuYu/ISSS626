@@ -74,42 +74,60 @@ distmat <- ODMatrix %>%
   select(c(-c('origin_id')))
 ```
 
-`{r},eval=FALSE} acc_Hansen <- data.frame(ac(hexagons$demand,                             eldercare$capacity,                             distmat_km,                              #d0 = 50,                             power = 2,                              family = "Hansen"))`
+```{demand <- hexagons$demand}
+capacity <- eldercare$capacity
+power <- 2
 
-\`\`\`{r},eval=FALSE} colnames(acc_Hansen) \<- "accHansen"
+# 手动实现 Hansen 可达性计算
+acc_Hansen <- apply(distmat_km, 1, function(d_i) {
+  sum(capacity / (d_i^power), na.rm = TRUE)
+})
 
-acc_Hansen \<- as_tibble(acc_Hansen)
-
-hexagon_Hansen \<- bind_cols(hexagons, acc_Hansen)
-
-```         
-
-```{r},eval=FALSE}
-acc_Hansen <- data.frame(ac(hexagons$demand,
-                            eldercare$capacity,
-                            distmat_km, 
-                            #d0 = 50,
-                            power = 0.5, 
-                            family = "Hansen"))
-
-colnames(acc_Hansen) <- "accHansen"
-acc_Hansen <- as_tibble(acc_Hansen)
-hexagon_Hansen <- bind_cols(hexagons, acc_Hansen)
+# 添加到 hexagons 数据框
+hexagons$accHansen <- acc_Hansen
 ```
 
-\`\`\`{r},eval=FALSE} mapex \<- st_bbox(hexagons)
+```{r}
+mapex <- st_bbox(hexagons)
 
-tmap_mode("plot") tm_shape(hexagon_Hansen, bbox = mapex) + tm_fill(col = "accHansen", n = 10, style = "quantile", border.col = "black", border.lwd = 1) + tm_shape(eldercare) + tm_symbols(size = 0.1) + tm_layout(main.title = "Accessibility to eldercare: Hansen method", main.title.position = "center", main.title.size = 2, legend.outside = FALSE, legend.height = 0.45, legend.width = 3.0, legend.format = list(digits = 6), legend.position = c("right", "top"), frame = TRUE) + tm_compass(type="8star", size = 2) + tm_scale_bar(width = 0.15) + tm_grid(lwd = 0.1, alpha = 0.5)
+tmap_mode("plot")
+tm_shape(hexagon_Hansen,
+         bbox = mapex) + 
+  tm_fill(col = "accHansen",
+          n = 10,
+          style = "quantile",
+          border.col = "black",
+          border.lwd = 1) +
+tm_shape(eldercare) +
+  tm_symbols(size = 0.1) +
+  tm_layout(main.title = "Accessibility to eldercare: Hansen method",
+            main.title.position = "center",
+            main.title.size = 2,
+            legend.outside = FALSE,
+            legend.height = 0.45, 
+            legend.width = 3.0,
+            legend.format = list(digits = 6),
+            legend.position = c("right", "top"),
+            frame = TRUE) +
+  tm_compass(type="8star", size = 2) +
+  tm_scale_bar(width = 0.15) +
+  tm_grid(lwd = 0.1, alpha = 0.5)
+```
 
-```         
-
-![](https://isss626-ay2024-25aug.netlify.app/in-class_ex/in-class_ex09/In-class_Ex09_files/figure-revealjs/unnamed-chunk-18-1.png)
-
-```{r},eval=FALSE}
+```{r}
 hexagon_Hansen <- st_join(hexagon_Hansen, mpsz, 
                           join = st_intersects)
 ```
 
-`{r},eval=FALSE} ggbetweenstats(   data = hexagon_Hansen,   x = REGION_N,   y = accHansen,   type = "p")`
+```{r}
+colnames(hexagon_Hansen)
+```
 
-![](https://isss626-ay2024-25aug.netlify.app/in-class_ex/in-class_ex09/In-class_Ex09_files/figure-revealjs/unnamed-chunk-21-1.png)
+```{r}
+ggbetweenstats(
+  data = hexagon_Hansen,
+  x = REGION_N.x,  
+  y = accHansen,
+  type = "p"
+)
+```
