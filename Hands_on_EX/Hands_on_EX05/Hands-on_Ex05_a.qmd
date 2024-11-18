@@ -18,7 +18,7 @@ hunan2012 <- read_csv("/Users/yuhu/Desktop/Geospatial Analytics and Applications
 
 ```{r}
 hunan <- left_join(hunan,hunan2012) %>%
-  select(1:4, 7, 15)
+  dplyr::select(1:4, 7, 15)
 ```
 
 ```{r}
