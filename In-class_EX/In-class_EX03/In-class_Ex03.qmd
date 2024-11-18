@@ -31,6 +31,15 @@ plot(childcare,add=T,col='red',pch = 19)
 ```
 
 ```{r}
+plot(network)
+plot(childcare,add=T,col='red',pch = 19)
+```
+
+```{r}
+tmap_mode('view')
+```
+
+```{r}
 tmap_mode('view')
 tm_shape(childcare) + 
   tm_dots() + 
@@ -50,6 +59,33 @@ lixels <- lixelize_lines(network,
 
 ```{r}
 samples <- lines_center(lixels) 
+```
+
+```{r}
+
+tmap_mode('view')
+```
+
+```{r}
+tm_shape(lixels) +
+  tm_lines() +
+tm_shape(samples) +
+  tm_dots(size = 0.01)
+```
+
+```{r}
+tmap_mode('plot')
+```
+
+```{r}
+densities <- nkde(network, 
+                  events = childcare,
+                  w = rep(1, nrow(childcare)),
+                  samples = samples,
+                  kernel_name = "quartic",
+                  bw = 300, 
+                  div= "bw", 
+                  method = "simple")
 ```
 
 ```{r}
