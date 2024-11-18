@@ -1,0 +1,86 @@
+---
+title: "In-class EX10"
+---
+
+```{r}
+pacman::p_load(tidyverse, sf, tmap, httr, performance)
+```
+
+```{r}
+folder_path <- "/Users/yuhu/Desktop/Geospatial Analytics and Applications/In-class EX10/data/aspatial"
+
+file_list <- list.files(
+  path = folder_path, 
+  pattern = "^ResidentialTransa.*\\.csv$", # 根据文件名称更改正则表达式
+  full.names = TRUE
+)
+
+library(readr)
+library(dplyr)
+library(purrr)
+
+realis_data <- file_list %>%
+  map_dfr(read_csv)
+
+# 查看结果
+print(realis_data)
+
+```
+
+```{r}
+condo_resale <- realis_data %>%
+  mutate(`Sale Date` = dmy(`Sale Date`)) %>%
+  filter(`Type of Sale` == "Resale" &
+           `Property Type` == "Condominium")
+```
+
+```{r}
+postcode <- unique(condo_resale$`Postal Code`)
+```
+
+```{r}
+url <- "https://onemap.gov.sg/api/common/elastic/search"
+found <- data.frame()
+not_found <- data.frame()
+
+for (postcode in postcode){
+  query <- list('searchVal'=postcode, 'returnGeom'='Y', 
+                'getAddrDetails'='Y', 'pageNum'='1')
+  res <- GET(url, query=query)
+  if ((content(res)$found)!=0){
+    found <- rbind(found, data.frame(content(res))[4:13])
+  } else {not_found = data.frame(postcode)
+  }
+}
+```
+
+```{r}
+found <- found %>%
+  select(c(6:8)) %>%
+  rename(POSTAL = `results.POSTAL`,
+         XCOORD = `results.X`,
+         YCOORD = `results.Y`)
+```
+
+```{r}
+condo_resale_geocoded = left_join(
+  condo_resale, found, 
+  by = c('Postal Code' = 'POSTAL'))
+```
+
+```{r}
+condo_resale_sf <- st_as_sf(condo_resale_geocoded, 
+                            coords = c("XCOORD",
+                                       "YCOORD"),
+                            crs=3414)
+```
+
+```{r}
+overlapping_points <- condo_resale_sf %>%
+  mutate(overlap = lengths(st_equals(., .)) > 1)
+```
+
+```{r}
+condo_resale_sf <- condo_resale_sf %>%
+  st_jitter(amount = 2)
+```

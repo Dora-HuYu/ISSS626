@@ -74,17 +74,19 @@ distmat <- ODMatrix %>%
   select(c(-c('origin_id')))
 ```
 
-```{demand <- hexagons$demand}
+```{r}
+# 示例 Hansen 模型计算
+demand <- hexagons$demand
 capacity <- eldercare$capacity
+distance_matrix <- distmat_km  # 假设为矩阵或数据框
 power <- 2
 
-# 手动实现 Hansen 可达性计算
-acc_Hansen <- apply(distmat_km, 1, function(d_i) {
+acc_Hansen <- apply(distance_matrix, 1, function(d_i) {
   sum(capacity / (d_i^power), na.rm = TRUE)
 })
 
-# 添加到 hexagons 数据框
 hexagons$accHansen <- acc_Hansen
+
 ```
 
 ```{r}
