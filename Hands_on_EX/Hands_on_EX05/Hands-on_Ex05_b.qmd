@@ -17,8 +17,7 @@ hunan2012 <- read_csv("/Users/yuhu/Desktop/Geospatial Analytics and Applications
 
 ```{r}
 hunan <- left_join(hunan,hunan2012) %>%
-  select(1:4, 7, 15)
-
+  dplyr::select(1:4, 7, 15)
 ```
 
 ```{r}
@@ -38,8 +37,8 @@ quantile <- tm_shape(hunan) +
 
 tmap_arrange(equal, 
              quantile, 
-             asp=1, 
-             ncol=2)
+             asp = 1, 
+             ncol = 2)
 ```
 
 ```{r}
