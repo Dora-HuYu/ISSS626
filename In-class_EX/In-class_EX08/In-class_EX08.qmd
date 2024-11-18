@@ -194,12 +194,5 @@ test_data_pred <- cbind(test_data,
                         GRF_pred_df)
 ```
 
-```{r,eval=FALSE}
-ggplot(data = test_data_pred,
-       aes(x = GRF_pred_df,
-           y = resale_price)) +
-  geom_point()
-```
-
 ```         
 ```
