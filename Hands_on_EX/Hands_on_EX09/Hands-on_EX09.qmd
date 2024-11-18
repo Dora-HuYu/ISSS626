@@ -57,41 +57,41 @@ distmat <- ODMatrix %>%
 distmat_km <- as.matrix(distmat/1000)
 ```
 
-```{r},eval=FALSE}
-acc_Hansen <- data.frame(ac(hexagons$demand,
-                            eldercare$capacity,
-                            distmat_km, 
-                            #d0 = 50,
-                            power = 2, 
-                            family = "Hansen"))
+```{r}
+hansen_accessibility <- function(demand, capacity, distance_matrix, d0, power) {
+  exp_decay <- exp(-distance_matrix / d0)  # 指数衰减公式
+  accessibility <- rowSums(capacity * (exp_decay ^ power))
+  return(accessibility)
+}
+
+# 使用自定义函数计算 Hansen 可达性
+acc_Hansen <- data.frame(
+  hansen_accessibility(
+    hexagons$demand,
+    eldercare$capacity,
+    distmat_km,
+    d0 = 50,  # 设置衰减距离
+    power = 2  # 设置衰减幂
+  )
+)
 ```
 
-![](https://r4gdsa.netlify.app/chap17/img/image3.jpg)
 
-```{r},eval=FALSE}
+```{r}
 colnames(acc_Hansen) <- "accHansen"
 ```
 
-![](https://r4gdsa.netlify.app/chap17/img/image4.jpg)
 
-```{r},eval=FALSE}
+```{r}
 acc_Hansen <- tbl_df(acc_Hansen)
 ```
 
-```{r},eval=FALSE}
+```{r}
 hexagon_Hansen <- bind_cols(hexagons, acc_Hansen)
 ```
 
-![](https://r4gdsa.netlify.app/chap17/img/image5.jpg)
 
-```{r},eval=FALSE}
-acc_Hansen <- data.frame(ac(hexagons$demand,
-                            eldercare$capacity,
-                            distmat_km, 
-                            #d0 = 50,
-                            power = 0.5, 
-                            family = "Hansen"))
-
+```{r}
 colnames(acc_Hansen) <- "accHansen"
 acc_Hansen <- tbl_df(acc_Hansen)
 hexagon_Hansen <- bind_cols(hexagons, acc_Hansen)
@@ -101,7 +101,7 @@ hexagon_Hansen <- bind_cols(hexagons, acc_Hansen)
 mapex <- st_bbox(hexagons)
 ```
 
-```{r},eval=FALSE}
+```{r}
 tmap_mode("plot")
 tm_shape(hexagon_Hansen,
          bbox = mapex) + 
@@ -126,12 +126,12 @@ tm_shape(eldercare) +
   tm_grid(lwd = 0.1, alpha = 0.5)
 ```
 
-```{r},eval=FALSE}
+```{r}
 hexagon_Hansen <- st_join(hexagon_Hansen, mpsz, 
                           join = st_intersects)
 ```
 
-```{r},eval=FALSE}
+```{r}
 ggplot(data=hexagon_Hansen, 
        aes(y = log(accHansen), 
            x= REGION_N)) +
@@ -142,22 +142,37 @@ ggplot(data=hexagon_Hansen,
              size=2)
 ```
 
-![](https://r4gdsa.netlify.app/chap17_files/figure-html/unnamed-chunk-18-1.png)
+```{r}
+# 定义自定义 Hansen 可达性函数
+hansen_accessibility <- function(demand, capacity, distance_matrix, d0, power) {
+  exp_decay <- exp(-distance_matrix / d0)  # 指数衰减公式
+  accessibility <- rowSums(capacity * (exp_decay ^ power))
+  return(accessibility)
+}
 
-```{r},eval=FALSE}
-acc_KD2SFCA <- data.frame(ac(hexagons$demand,
-                            eldercare$capacity,
-                            distmat_km, 
-                            d0 = 50,
-                            power = 2, 
-                            family = "KD2SFCA"))
+# 计算 KD2SFCA 可达性分数
+acc_KD2SFCA <- data.frame(
+  hansen_accessibility(
+    demand = hexagons$demand,       # 输入需求
+    capacity = eldercare$capacity, # 输入容量
+    distance_matrix = distmat_km,  # 距离矩阵
+    d0 = 50,                       # 衰减距离
+    power = 2                       # 衰减幂
+  )
+)
 
+# 重命名列名
 colnames(acc_KD2SFCA) <- "accKD2SFCA"
-acc_KD2SFCA <- tbl_df(acc_KD2SFCA)
+
+# 将可达性结果绑定到原 hexagons 数据框
 hexagon_KD2SFCA <- bind_cols(hexagons, acc_KD2SFCA)
+
+# 检查结果
+print(head(hexagon_KD2SFCA))
+
 ```
 
-```{r},eval=FALSE}
+```{r}
 tmap_mode("plot")
 tm_shape(hexagon_KD2SFCA,
          bbox = mapex) + 
@@ -182,14 +197,12 @@ tm_shape(eldercare) +
   tm_grid(lwd = 0.1, alpha = 0.5)
 ```
 
-![](https://r4gdsa.netlify.app/chap17_files/figure-html/unnamed-chunk-20-1.png)
-
-```{r},eval=FALSE}
+```{r}
 hexagon_KD2SFCA <- st_join(hexagon_KD2SFCA, mpsz, 
                           join = st_intersects)
 ```
 
-```{r},eval=FALSE}
+```{r}
 ggplot(data=hexagon_KD2SFCA, 
        aes(y = accKD2SFCA, 
            x= REGION_N)) +
@@ -200,22 +213,29 @@ ggplot(data=hexagon_KD2SFCA,
              size=2)
 ```
 
-![](https://r4gdsa.netlify.app/chap17_files/figure-html/unnamed-chunk-22-1.png)
+```{r}
+acc_SAM <- data.frame(
+  hansen_accessibility(
+    demand = hexagons$demand,       # 输入需求
+    capacity = eldercare$capacity, # 输入容量
+    distance_matrix = distmat_km,  # 距离矩阵
+    d0 = 50,                       # 衰减距离
+    power = 2                       # 衰减幂
+  )
+)
 
-```{r},eval=FALSE}
-acc_SAM <- data.frame(ac(hexagons$demand,
-                         eldercare$capacity,
-                         distmat_km, 
-                         d0 = 50,
-                         power = 2, 
-                         family = "SAM"))
-
+# 重命名列名
 colnames(acc_SAM) <- "accSAM"
-acc_SAM <- tbl_df(acc_SAM)
+
+# 将可达性结果绑定到原 hexagons 数据框
 hexagon_SAM <- bind_cols(hexagons, acc_SAM)
+
+# 检查结果
+print(head(hexagon_SAM))
+
 ```
 
-```{r},eval=FALSE}
+```{r}
 tmap_mode("plot")
 tm_shape(hexagon_SAM,
          bbox = mapex) + 
@@ -240,14 +260,13 @@ tm_shape(eldercare) +
   tm_grid(lwd = 0.1, alpha = 0.5)
 ```
 
-![](https://r4gdsa.netlify.app/chap17_files/figure-html/unnamed-chunk-24-1.png)
 
-```{r},eval=FALSE}
+```{r}
 hexagon_SAM <- st_join(hexagon_SAM, mpsz, 
                        join = st_intersects)
 ```
 
-```{r},eval=FALSE}
+```{r}
 ggplot(data=hexagon_SAM, 
        aes(y = accSAM, 
            x= REGION_N)) +
@@ -257,5 +276,3 @@ ggplot(data=hexagon_SAM,
              colour ="red", 
              size=2)
 ```
-
-![](https://r4gdsa.netlify.app/chap17_files/figure-html/unnamed-chunk-26-1.png)
